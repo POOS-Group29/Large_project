@@ -38,4 +38,23 @@ jobs:
           aws-region: us-east-1
 
       - name: Deploy to AWS Lambda
-        run: aws lambda update-function-code --function-name cop4331-express-lambda --zip-file fileb://backend.zip --revision-id ${{ github.ref }}
+        run: aws lambda update-function-code --function-name cop4331-express-lambda --zip-file fileb://backend.zip
+        id: deploy
+
+      - name: Publish Lambda Version
+        run: aws lambda publish-version --function-name cop4331-express-lambda --code-sha256 ${{ steps.deploy.outputs.codeSha256 }} --revision-id ${{ steps.deploy.outputs.revisionId }}
+        id: publish
+
+      - name: Check if Lambda Alias Exists
+        run: aws lambda get-alias --function-name cop4331-express-lambda --name ${{ github.ref }} || echo "::set-output name=alias_exists::false"
+        id: alias_exists
+
+      - name: Create Lambda Alias
+        if: steps.alias_exists.outputs.alias_exists == 'false'
+        run: aws lambda create-alias --function-name cop4331-express-lambda --function-version ${{ steps.publish.outputs.Version }} --name ${{ github.ref }}
+        id: alias
+
+      - name: Update Lambda Alias
+        if: steps.alias_exists.outputs.alias_exists == 'true'
+        run: aws lambda update-alias --function-name cop4331-express-lambda --function-version ${{ steps.publish.outputs.Version }} --name ${{ github.ref }}
+        id: update_alias
