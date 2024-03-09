@@ -3,6 +3,7 @@ import cors from "cors";
 import express from "express";
 import { MongooseSetUp } from "./config/MongoConfig";
 import { AuthRoutes } from "./routes/auth";
+import serverless from "serverless-http";
 
 // Set up mongoose
 MongooseSetUp();
@@ -18,7 +19,11 @@ app.use(urlencoded({ extended: true }));
 app.use("/api/auth", AuthRoutes);
 
 // Set port, listen for requests
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
-});
+if (process.env.AWS_LAMBDA === undefined) {
+  const PORT = process.env.PORT || 8080;
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}.`);
+  });
+}
+
+export const handler = serverless(app);

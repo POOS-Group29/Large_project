@@ -6,6 +6,14 @@ terraform {
     }
   }
   required_version = ">= 1.1.0"
+
+  cloud {
+    organization = "cop4331"
+
+    workspaces {
+      name = "cop4331-express-lambda"
+    }
+  }
 }
 
 provider "aws" {

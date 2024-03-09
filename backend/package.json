@@ -4,20 +4,23 @@
   "description": "",
   "main": "src/server.js",
   "scripts": {
-    "build": "npx tsc && ls -l src && ls -l dist",
-    "start": "node src/server.js",
+    "build": "npx tsc",
+    "build:lambda": "ncc build ./src/server.ts -o dist/",
+    "start": "node dist/server.js",
     "dev": "nodemon src/server.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@vercel/ncc": "^0.38.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.3.0",
-    "mongoose": "^8.2.1"
+    "mongoose": "^8.2.1",
+    "serverless-http": "^3.2.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
