@@ -3,15 +3,15 @@ name: Deploy to Lambda
 # On push to the backend folder, Pull Requests, or main branch
 on:
   push:
-    paths:
-      - "backend/**"
-    branches:
-      - main
-  pull_request:
-    paths:
-      - "backend/**"
-    branches:
-      - main
+  #   paths:
+  #     - "backend/**"
+  #   branches:
+  #     - main
+  # pull_request:
+  #   paths:
+  #     - "backend/**"
+  #   branches:
+  #     - main
 
 jobs:
   build_and_deploy:
@@ -38,11 +38,19 @@ jobs:
           aws-region: us-east-1
 
       - name: Deploy to AWS Lambda
-        run: aws lambda update-function-code --function-name cop4331-express-lambda --zip-file fileb://backend.zip
         id: deploy
+        run: |
+          response=$(aws lambda update-function-code --function-name cop4331-express-lambda --zip-file fileb://backend.zip)
+          codeSha256=$(echo $response | jq -r '.CodeSha256')
+          revisionId=$(echo $response | jq -r '.RevisionId')
+          echo "::set-output name=codeSha256::$codeSha256"
+          echo "::set-output name=revisionId::$revisionId"
 
       - name: Publish Lambda Version
-        run: aws lambda publish-version --function-name cop4331-express-lambda --code-sha256 ${{ steps.deploy.outputs.codeSha256 }} --revision-id ${{ steps.deploy.outputs.revisionId }}
+        run: |
+          response=$(aws lambda publish-version --function-name cop4331-express-lambda --code-sha256 ${{ steps.deploy.outputs.codeSha256 }} --revision-id ${{ steps.deploy.outputs.revisionId }})
+          Version=$(echo $response | jq -r '.Version')
+          echo "::set-output name=Version::$Version"
         id: publish
 
       - name: Check if Lambda Alias Exists
