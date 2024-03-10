@@ -28,3 +28,5 @@ yarn-error.log*
 *.tfstate
 *.tfstate.*.backup
 *.lock.hcl
+
+local.tfvars

@@ -8,6 +8,15 @@ variable "app_prefix" {
   description = "Common prefix for all Terraform created resources"
 }
 
+variable "vpc_id" {
+  description = "The ID of the VPC to deploy into"
+}
+
+variable "public_subnet_ids" {
+  description = "The IDs of the public subnets to deploy into"
+  type        = list(string)
+}
+
 variable "mongo_url" {
   description = "The URL for the MongoDB database"
 }
