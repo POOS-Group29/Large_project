@@ -98,7 +98,7 @@ export default function Login() {
                 </div>
               ))}
 
-            <div className="mt-10">
+            <div className="mt-4">
               <div>
                 <form className="space-y-6">
                   <div>
