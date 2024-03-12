@@ -22,28 +22,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Use Node.js 18.x
-        uses: actions/setup-node@v2
-        with:
-          node-version: 18.x
-
-      - name: Install dependencies
-        run: |
-          cd frontend
-          npm install
-
-      - name: Build
-        run: |
-          cd frontend
-          npm run build
-
-      - name: Deploy
-        run: |
-          cd frontend
-          npm install -g @aws-amplify/cli
-          amplify configure
-          amplify publish
-
   build_and_deploy_frontend_pr:
     if: ${{ github.event_name == 'pull_request' }}
     name: Build and Deploy React to AWS Amplify
