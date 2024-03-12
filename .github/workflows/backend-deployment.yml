@@ -39,7 +39,7 @@ jobs:
         run: aws lambda update-function-code --function-name cop4331-express-lambda --zip-file fileb://backend.zip --publish
 
   build_and_deploy_backend_pull_request:
-    if: ${{ github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, 'backend/') }}
     name: Build and Deploy Lambda (Pull Request)
     runs-on: ubuntu-latest
 
