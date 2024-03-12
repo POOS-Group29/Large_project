@@ -26,4 +26,5 @@ if (process.env.AWS_LAMBDA === undefined) {
   });
 }
 
+// Export the express app
 export const handler = serverless(app);
