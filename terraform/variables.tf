@@ -20,3 +20,7 @@ variable "public_subnet_ids" {
 variable "mongo_url" {
   description = "The URL for the MongoDB database"
 }
+
+variable "certificate_arn" {
+  description = "The ARN of the SSL certificate to use for the ALB"
+}

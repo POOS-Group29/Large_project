@@ -36,14 +36,37 @@ resource "aws_lb_target_group" "cop4331-express-tg-prod" {
   }
 }
 
-resource "aws_lb_listener" "cop4331-express-listener" {
+resource "aws_lb_listener" "cop4331-express-listener-https" {
+  load_balancer_arn = aws_lb.cop4331-express-alb.arn
+  port              = "443"
+  protocol          = "HTTPS"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.cop4331-express-tg-prod.arn
+  }
+
+  ssl_policy      = "ELBSecurityPolicy-2016-08"
+  certificate_arn = var.certificate_arn
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_lb_listener" "cop4331-express-listener-http" {
   load_balancer_arn = aws_lb.cop4331-express-alb.arn
   port              = "80"
   protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.cop4331-express-tg-prod.arn
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 }
 
@@ -53,7 +76,7 @@ resource "aws_lb_target_group_attachment" "cop4331-express-tg-attachment-dev" {
 }
 
 resource "aws_lb_listener_rule" "cop4331-express-listener-rule-dev" {
-  listener_arn = aws_lb_listener.cop4331-express-listener.arn
+  listener_arn = aws_lb_listener.cop4331-express-listener-https.arn
   priority     = 200
 
   action {
@@ -77,8 +100,6 @@ resource "aws_lambda_permission" "cop4331-express-lambda-permission-dev" {
   source_arn    = aws_lb_target_group.cop4331-express-tg-dev.arn
 }
 
-
-
 resource "aws_lb_target_group_attachment" "cop4331-express-tg-attachment-prod" {
   target_group_arn = aws_lb_target_group.cop4331-express-tg-prod.arn
   target_id        = aws_lambda_function.cop4331-express-lambda.arn
@@ -93,7 +114,7 @@ resource "aws_lambda_permission" "cop4331-express-lambda-permission-prod" {
 }
 
 resource "aws_lb_listener_rule" "cop4331-express-listener-rule-prod" {
-  listener_arn = aws_lb_listener.cop4331-express-listener.arn
+  listener_arn = aws_lb_listener.cop4331-express-listener-https.arn
   priority     = 100
 
   action {
