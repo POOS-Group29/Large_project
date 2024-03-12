@@ -1,33 +1,43 @@
+import {
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+} from "@heroicons/react/20/solid";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { CheckCircleIcon } from "@heroicons/react/20/solid";
 
-export default function Example() {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState({ message: "", isError: false });
 
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    fetch("https://api.cop4331.xhoantran.com/api/auth/signup/", {
+  const handleSubmit = () => {
+    fetch("https://api.cop4331.xhoantran.com/api/auth/signin/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, password, name }),
+      body: JSON.stringify({ email, password }),
     })
       .then((response) => {
         if (response.status === 200) {
-          setMessage("Account created successfully");
+          setMessage({ message: "Logged in successfully", isError: false });
+          response.json().then((data) => {
+            localStorage.setItem("token", data.token);
+          });
+          navigate("/");
+        } else {
+          response.json().then((data) => {
+            setMessage({ message: data.message, isError: true });
+          });
         }
       })
-      .catch((error) => {
-        console.error("Error:", error);
+      .catch(() => {
+        setMessage({ message: "An error occurred", isError: true });
       });
   };
+
   return (
     <>
       <div className="flex min-h-full flex-1">
@@ -40,59 +50,57 @@ export default function Example() {
                 alt="Your Company"
               />
               <h2 className="mt-8 text-2xl font-bold leading-9 tracking-tight text-gray-900">
-                Register for an account
+                Sign in to your account
               </h2>
               <p className="mt-2 text-sm leading-6 text-gray-500">
-                Already a member?{" "}
+                Not a member?{" "}
                 <Link
-                  to="/signin"
+                  to="/signup"
                   className="font-semibold text-blue-600 hover:text-blue-500"
                 >
-                  Sign in
+                  Start a 14 day free trial
                 </Link>
               </p>
             </div>
 
-            {message && (
-              <div className="rounded-md bg-green-50 p-4 mt-4">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <CheckCircleIcon
-                      className="h-5 w-5 text-green-400"
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <div className="ml-3">
-                    <h3 className="text-sm font-medium leading-5 text-green-800">
-                      {message}
-                    </h3>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="mt-4">
-              <div>
-                <form className="space-y-6">
-                  <div>
-                    <label
-                      htmlFor="fullname"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                    >
-                      Full name
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        id="fullname"
-                        name="fullname"
-                        type="text"
-                        required
-                        onInput={(e) => setName(e.target.value)}
-                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+            {message.message &&
+              (message.isError ? (
+                <div className="rounded-md bg-red-50 p-4 mt-4">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <ExclamationCircleIcon
+                        className="h-5 w-5 text-red-400"
+                        aria-hidden="true"
                       />
                     </div>
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium leading-5 text-red-800">
+                        {message.message}
+                      </h3>
+                    </div>
                   </div>
+                </div>
+              ) : (
+                <div className="rounded-md bg-green-50 p-4 mt-4">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <CheckCircleIcon
+                        className="h-5 w-5 text-green-400"
+                        aria-hidden="true"
+                      />
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium leading-5 text-green-800">
+                        {message.message}
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+              ))}
 
+            <div className="mt-10">
+              <div>
+                <form className="space-y-6">
                   <div>
                     <label
                       htmlFor="email"
@@ -100,17 +108,17 @@ export default function Example() {
                     >
                       Email address
                     </label>
-                    <div className="mt-2">
-                      <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        autoComplete="email"
-                        required
-                        onInput={(e) => setEmail(e.target.value)}
-                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      required
+                      onInput={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setEmail(e.target.value)
+                      }
+                      className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                    />
                   </div>
 
                   <div>
@@ -127,19 +135,47 @@ export default function Example() {
                         type="password"
                         autoComplete="current-password"
                         required
-                        onInput={(e) => setPassword(e.target.value)}
+                        onInput={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setPassword(e.target.value)
+                        }
                         className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
                       />
                     </div>
                   </div>
 
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <input
+                        id="remember-me"
+                        name="remember-me"
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600"
+                      />
+                      <label
+                        htmlFor="remember-me"
+                        className="ml-3 block text-sm leading-6 text-gray-700"
+                      >
+                        Remember me
+                      </label>
+                    </div>
+
+                    <div className="text-sm leading-6">
+                      <Link
+                        to="/forgot-password"
+                        className="font-semibold text-blue-600 hover:text-blue-500"
+                      >
+                        Forgot password?
+                      </Link>
+                    </div>
+                  </div>
+
                   <div>
                     <button
-                      type="submit"
-                      onClick={handleSubmit}
+                      type="button"
                       className="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                      onClick={handleSubmit}
                     >
-                      Register
+                      Sign in
                     </button>
                   </div>
                 </form>

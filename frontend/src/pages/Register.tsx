@@ -1,35 +1,48 @@
+import {
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+} from "@heroicons/react/20/solid";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-export default function Login() {
+export default function Example() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [message, setMessage] = useState({ message: "", isError: false });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    fetch("https://api.cop4331.xhoantran.com/api/auth/signin/", {
+  const handleSubmit = () => {
+    fetch("https://api.cop4331.xhoantran.com/api/auth/signup/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, name }),
     })
       .then((response) => {
         if (response.status === 200) {
-          setMessage("Success");
-          response.json().then((data) => {
-            localStorage.setItem("token", data.token);
+          response.json().then(() => {
+            setMessage({
+              message: "Account created successfully",
+              isError: false,
+            });
           });
-          navigate("/");
+        } else {
+          response.json().then((data) => {
+            setMessage({
+              message: data.message,
+              isError: true,
+            });
+          });
         }
       })
-      .catch((error) => {
-        console.error("Error:", error);
+      .catch(() => {
+        setMessage({
+          message: "An error occurred",
+          isError: true,
+        });
       });
   };
-
   return (
     <>
       <div className="flex min-h-full flex-1">
@@ -42,22 +55,78 @@ export default function Login() {
                 alt="Your Company"
               />
               <h2 className="mt-8 text-2xl font-bold leading-9 tracking-tight text-gray-900">
-                Sign in to your account
+                Register for an account
               </h2>
               <p className="mt-2 text-sm leading-6 text-gray-500">
-                Not a member?{" "}
+                Already a member?{" "}
                 <Link
-                  to="/signup"
+                  to="/signin"
                   className="font-semibold text-blue-600 hover:text-blue-500"
                 >
-                  Start a 14 day free trial
+                  Sign in
                 </Link>
               </p>
             </div>
 
-            <div className="mt-10">
+            {message.message &&
+              (message.isError ? (
+                <div className="rounded-md bg-red-50 p-4 mt-4">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <ExclamationCircleIcon
+                        className="h-5 w-5 text-red-400"
+                        aria-hidden="true"
+                      />
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium leading-5 text-red-800">
+                        {message.message}
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-md bg-green-50 p-4 mt-4">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <CheckCircleIcon
+                        className="h-5 w-5 text-green-400"
+                        aria-hidden="true"
+                      />
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium leading-5 text-green-800">
+                        {message.message}
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+            <div className="mt-4">
               <div>
                 <form className="space-y-6">
+                  <div>
+                    <label
+                      htmlFor="fullname"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Full name
+                    </label>
+                    <div className="mt-2">
+                      <input
+                        id="fullname"
+                        name="fullname"
+                        type="text"
+                        required
+                        onInput={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setName(e.target.value)
+                        }
+                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                      />
+                    </div>
+                  </div>
+
                   <div>
                     <label
                       htmlFor="email"
@@ -72,7 +141,9 @@ export default function Login() {
                         type="email"
                         autoComplete="email"
                         required
-                        onInput={(e) => setEmail(e.target.value)}
+                        onInput={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setEmail(e.target.value)
+                        }
                         className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
                       />
                     </div>
@@ -92,45 +163,21 @@ export default function Login() {
                         type="password"
                         autoComplete="current-password"
                         required
-                        onInput={(e) => setPassword(e.target.value)}
+                        onInput={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setPassword(e.target.value)
+                        }
                         className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
                       />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <input
-                        id="remember-me"
-                        name="remember-me"
-                        type="checkbox"
-                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600"
-                      />
-                      <label
-                        htmlFor="remember-me"
-                        className="ml-3 block text-sm leading-6 text-gray-700"
-                      >
-                        Remember me
-                      </label>
-                    </div>
-
-                    <div className="text-sm leading-6">
-                      <Link
-                        to="/forgot-password"
-                        className="font-semibold text-blue-600 hover:text-blue-500"
-                      >
-                        Forgot password?
-                      </Link>
                     </div>
                   </div>
 
                   <div>
                     <button
                       type="submit"
-                      className="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                       onClick={handleSubmit}
+                      className="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                     >
-                      Sign in
+                      Register
                     </button>
                   </div>
                 </form>

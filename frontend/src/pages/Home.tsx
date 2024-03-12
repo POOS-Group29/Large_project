@@ -1,5 +1,8 @@
-import { Fragment, useState } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
+import {
+  ChevronDownIcon,
+  MagnifyingGlassIcon,
+} from "@heroicons/react/20/solid";
 import {
   Bars3Icon,
   BellIcon,
@@ -12,10 +15,8 @@ import {
   UsersIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import {
-  ChevronDownIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/20/solid";
+import clsx from "clsx";
+import { Fragment, useState } from "react";
 
 const navigation = [
   { name: "Dashboard", href: "#", icon: HomeIcon, current: true },
@@ -35,23 +36,11 @@ const userNavigation = [
   { name: "Sign out", href: "#" },
 ];
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
-
-export default function Example() {
+export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <>
-      {/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full bg-white">
-        <body class="h-full">
-        ```
-      */}
       <div>
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
@@ -122,7 +111,7 @@ export default function Example() {
                               <li key={item.name}>
                                 <a
                                   href={item.href}
-                                  className={classNames(
+                                  className={clsx(
                                     item.current
                                       ? "bg-gray-800 text-white"
                                       : "text-gray-400 hover:text-white hover:bg-gray-800",
@@ -148,7 +137,7 @@ export default function Example() {
                               <li key={team.name}>
                                 <a
                                   href={team.href}
-                                  className={classNames(
+                                  className={clsx(
                                     team.current
                                       ? "bg-gray-800 text-white"
                                       : "text-gray-400 hover:text-white hover:bg-gray-800",
@@ -204,7 +193,7 @@ export default function Example() {
                       <li key={item.name}>
                         <a
                           href={item.href}
-                          className={classNames(
+                          className={clsx(
                             item.current
                               ? "bg-gray-800 text-white"
                               : "text-gray-400 hover:text-white hover:bg-gray-800",
@@ -230,7 +219,7 @@ export default function Example() {
                       <li key={team.name}>
                         <a
                           href={team.href}
-                          className={classNames(
+                          className={clsx(
                             team.current
                               ? "bg-gray-800 text-white"
                               : "text-gray-400 hover:text-white hover:bg-gray-800",
@@ -349,7 +338,7 @@ export default function Example() {
                           {({ active }) => (
                             <a
                               href={item.href}
-                              className={classNames(
+                              className={clsx(
                                 active ? "bg-gray-50" : "",
                                 "block px-3 py-1 text-sm leading-6 text-gray-900"
                               )}
