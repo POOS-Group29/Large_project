@@ -10,8 +10,7 @@ on:
 
 jobs:
   build_and_deploy_backend_main:
-    # if: ${{ github.event_name == 'push' && contains(github.event.head_commit.modified, 'backend/') }}
-    if: ${{ github.event_name == 'push' }}
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.modified, 'backend/') }}
     name: Build and Deploy Lambda (Main Branch)
     runs-on: ubuntu-latest
 
@@ -65,3 +64,15 @@ jobs:
       - name: Deploy to AWS Lambda
         id: deploy
         run: aws lambda update-function-code --function-name cop4331-express-lambda-dev --zip-file fileb://backend.zip --publish
+
+      - name: Comment on Pull Request
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'The backend has been successfully deployed to the development environment.'
+            })
