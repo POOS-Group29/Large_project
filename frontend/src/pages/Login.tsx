@@ -58,7 +58,7 @@ export default function Login() {
                   to="/signup"
                   className="font-semibold text-blue-600 hover:text-blue-500"
                 >
-                  Start a 14 day free trial
+                  Sign up now
                 </Link>
               </p>
             </div>
