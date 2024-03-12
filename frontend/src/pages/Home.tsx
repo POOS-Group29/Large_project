@@ -356,7 +356,10 @@ export default function Home() {
           </div>
 
           <main className="py-10">
-            <div className="px-4 sm:px-6 lg:px-8">{/* Your content */}</div>
+            <div className="px-4 sm:px-6 lg:px-8">
+              {/* Your content */}
+              Just to test the layout
+            </div>
           </main>
         </div>
       </div>
