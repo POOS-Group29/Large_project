@@ -9,7 +9,7 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch("http://api.cop4331.xhoantran.com/api/auth/signin/", {
+    fetch("https://api.cop4331.xhoantran.com/api/auth/signin/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

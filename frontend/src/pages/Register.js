@@ -12,7 +12,7 @@ export default function Example() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch("http://api.cop4331.xhoantran.com/api/auth/signup/", {
+    fetch("https://api.cop4331.xhoantran.com/api/auth/signup/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
