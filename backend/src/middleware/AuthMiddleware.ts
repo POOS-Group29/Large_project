@@ -1,3 +1,4 @@
+import logger from "config/winston";
 import jwt from "jsonwebtoken";
 import { AuthConfig } from "../config/AuthConfig";
 import User from "../model/User";
@@ -11,12 +12,12 @@ export const authMiddleware = async (req: any, res: any, next: any) => {
   }
 
   try {
-    // Verify token with the secret key and jwtExpiration
     const decoded = jwt.verify(token, AuthConfig.secret) as { _id: string };
-
     req.user = await User.findById(decoded._id);
+    logger.info(`User ${req.user._id} authenticated`);
     next();
   } catch (error) {
+    logger.error(`Error: ${error}`);
     res.status(401);
     res.json({ message: "Not authorized" });
   }
