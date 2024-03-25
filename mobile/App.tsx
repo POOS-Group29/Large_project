@@ -137,6 +137,7 @@ function App(): React.JSX.Element {
       try {
         const response = await axios.get(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${currentPosition.latitude},${currentPosition.longitude}&radius=50000&type=restaurant&key=AIzaSyC3-XMS4aQ7nQR5X2LIT6bwzbR8WhM6ZyQ`);
         setRestaurants(response.data.results);
+        console.log(response.data.results);
       } catch (error) {
         console.error(error);
       }
