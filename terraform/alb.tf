@@ -86,7 +86,7 @@ resource "aws_lb_listener_rule" "cop4331-express-listener-rule-dev" {
 
   condition {
     http_header {
-      http_header_name = "Environemnt"
+      http_header_name = "Environment"
       values           = ["dev"]
     }
   }
@@ -124,7 +124,7 @@ resource "aws_lb_listener_rule" "cop4331-express-listener-rule-prod" {
 
   condition {
     http_header {
-      http_header_name = "Environemnt"
+      http_header_name = "Environment"
       values           = ["prod"]
     }
   }
