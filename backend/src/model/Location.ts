@@ -10,6 +10,9 @@ interface ILocation extends Document {
     type: string;
     coordinates: number[];
   };
+
+  difficultyRateCount: number;
+  difficultyRateValue: number;
 }
 
 const locationSchema = new Schema<ILocation>(
@@ -40,6 +43,14 @@ const locationSchema = new Schema<ILocation>(
         type: [Number],
         required: true,
       },
+    },
+    difficultyRateCount: {
+      type: Number,
+      default: 0,
+    },
+    difficultyRateValue: {
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true }
