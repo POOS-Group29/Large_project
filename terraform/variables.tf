@@ -32,3 +32,7 @@ variable "mailgun_api_key" {
 variable "mailgun_domain" {
   description = "The domain for the Mailgun service"
 }
+
+variable "frontend_base_url" {
+  description = "The base URL for the frontend"
+}

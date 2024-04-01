@@ -104,13 +104,9 @@ AuthRoutes.post("/forgot-password", async (req, res) => {
         subject: "Reset Password",
         text: ResetPassword(user.name, token),
       },
-      (err, info) => {
+      (err, _) => {
         if (err) {
           logger.error(`Error to send email: ${err}`);
-        }
-
-        if (info) {
-          logger.info(`Email sent: ${info.response}`);
         }
       }
     );

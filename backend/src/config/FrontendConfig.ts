@@ -2,7 +2,7 @@ import logger from "./winston";
 
 if (!process.env.FRONTEND_BASE_URL) {
   logger.error("FRONTEND_BASE_URL is not set");
-  process.exit(1);
+  throw new Error("FRONTEND_BASE_URL is not set");
 }
 
 export const FRONTEND_BASE_URL = process.env.FRONTEND_BASE_URL;
