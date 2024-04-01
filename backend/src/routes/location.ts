@@ -15,7 +15,7 @@ LocationRoutes.get('/', async (req, res) => {
         },
       },
     },
-  }).limit(20);
+  });
   res.json(locations);
 });
 

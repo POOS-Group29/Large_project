@@ -40,6 +40,7 @@ const locationSchema = new Schema<ILocation>(
         type: [Number],
         required: true,
       },
+      index: "2dsphere",
     },
   },
   { timestamps: true }
