@@ -1,6 +1,7 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import { AuthConfig } from "../config/AuthConfig";
+import { nodemailerTransporter } from "../config/nodemailer";
 import logger from "../config/winston";
 import { authMiddleware } from "../middleware/AuthMiddleware";
 import User from "../model/User";
@@ -37,7 +38,7 @@ AuthRoutes.post("/signup", async (req, res) => {
   if (user) {
     logger.error(`User ${email} already exists`);
     res.status(400);
-    res.json({ message: "User already exists" });
+    return res.json({ message: "User already exists" });
   }
 
   // Create a new user
@@ -48,8 +49,7 @@ AuthRoutes.post("/signup", async (req, res) => {
   } catch (error) {
     logger.error(`Error to save user ${email} to database: ${error}`);
     res.status(400);
-    res.json({ message: "Invalid user data" });
-    return;
+    return res.json({ message: "Invalid user data" });
   }
 
   if (newUser) {
@@ -58,13 +58,31 @@ AuthRoutes.post("/signup", async (req, res) => {
       expiresIn: AuthConfig.jwtExpiration,
     });
     logger.info(`User ${email} signed up`);
-    res.json({ token, user: { _id, name, email } });
-    return;
+
+    nodemailerTransporter.sendMail(
+      {
+        from: "no-reply@cop4331.xhoantran.com",
+        to: "xhoantran@gmail.com",
+        subject: "Message",
+        text: "I hope this message gets sent!",
+      },
+      (err, info) => {
+        if (err) {
+          logger.error(`Error to send email: ${err}`);
+        }
+
+        if (info) {
+          logger.info(`Email sent: ${info.response}`);
+        }
+      }
+    );
+
+    return res.json({ token, user: { _id, name, email } });
   }
 
   logger.error(`Error to sign up user ${email}`);
   res.status(400);
-  res.json({ message: "Invalid user data" });
+  return res.json({ message: "Invalid user data" });
 });
 
 AuthRoutes.get("/profile", authMiddleware, async (req, res) => {

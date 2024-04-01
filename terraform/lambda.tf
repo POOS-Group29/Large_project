@@ -46,10 +46,12 @@ resource "aws_lambda_function" "cop4331-express-lambda" {
 
   environment {
     variables = {
-      NODE_ENV   = "production",
-      AWS_LAMBDA = "true",
-      MONGO_URL  = var.mongo_url,
-      JWT_SECRET = "SUPPER_SECRET"
+      NODE_ENV        = "production",
+      AWS_LAMBDA      = "true",
+      MONGO_URL       = var.mongo_url,
+      JWT_SECRET      = "SUPPER_SECRET",
+      MAILGUN_API_KEY = var.mailgun_api_key,
+      MAILGUN_DOMAIN  = var.mailgun_domain
     }
   }
 
