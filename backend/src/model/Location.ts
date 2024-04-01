@@ -45,7 +45,7 @@ const locationSchema = new Schema<ILocation>(
   { timestamps: true }
 );
 
-locationSchema.index({ location: "2dsphere" });
+locationSchema.index({ location: "2dsphere" }, { unique: true });
 
 const Location: Model<ILocation> = model("Location", locationSchema);
 

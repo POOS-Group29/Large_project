@@ -1,8 +1,8 @@
 import { json, urlencoded } from "body-parser";
-import { MongooseSetUp } from "config/MongoConfig";
 import cors from "cors";
 import express from "express";
 import serverless from "serverless-http";
+import { MongooseSetUp } from "./config/MongoConfig";
 import { routes } from "./routes";
 
 // Set up mongoose

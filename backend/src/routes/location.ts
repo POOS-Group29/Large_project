@@ -1,6 +1,6 @@
-import logger from "config/winston";
 import express from "express";
-import Location from "model/Location";
+import logger from "../config/winston";
+import Location from "../model/Location";
 
 export const LocationRoutes = express.Router();
 
@@ -36,13 +36,6 @@ LocationRoutes.get("/", async (req, res) => {
   }
 });
 
-// Retrieve a location by ID
-LocationRoutes.get("/:id", async (req, res) => {
-  const { id } = req.params;
-  const location = await Location.findById(id);
-  res.json(location);
-});
-
 // Create a new location
 LocationRoutes.post("/", async (req, res) => {
   const { name, address, city, state, zip, lat, long } = req.body;
@@ -59,12 +52,17 @@ LocationRoutes.post("/", async (req, res) => {
       },
     });
     await location.save();
-  } catch (error) {
+    return res.json(location);
+  } catch (error: any) {
     logger.error(error);
     return res.status(400).json({ message: "Error creating location" });
   }
+});
 
-  // Success response
+// Retrieve a location by ID
+LocationRoutes.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  const location = await Location.findById(id);
   res.json(location);
 });
 

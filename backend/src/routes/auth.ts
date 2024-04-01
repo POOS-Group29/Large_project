@@ -1,9 +1,9 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import { AuthConfig } from "../config/AuthConfig";
+import logger from "../config/winston";
 import { authMiddleware } from "../middleware/AuthMiddleware";
 import User from "../model/User";
-import logger from "config/winston";
 
 export const AuthRoutes = express.Router();
 
