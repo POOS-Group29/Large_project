@@ -1,10 +1,11 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import { AuthConfig } from "../config/AuthConfig";
-import { nodemailerTransporter } from "../config/nodemailer";
+import { nodemailerTransporter, sendFromEmail } from "../config/nodemailer";
 import logger from "../config/winston";
 import { authMiddleware } from "../middleware/AuthMiddleware";
 import User from "../model/User";
+import { ResetPassword } from "../templates/ResetPassword";
 
 export const AuthRoutes = express.Router();
 
@@ -83,6 +84,41 @@ AuthRoutes.post("/signup", async (req, res) => {
   logger.error(`Error to sign up user ${email}`);
   res.status(400);
   return res.json({ message: "Invalid user data" });
+});
+
+AuthRoutes.post("/forgot-password", async (req, res) => {
+  const { email } = req.body;
+  logger.info(`User ${email} is trying to reset password`);
+
+  const user = await User.findOne({ email });
+
+  if (user) {
+    const token = jwt.sign({ _id: user._id }, AuthConfig.secret, {
+      expiresIn: "1h",
+    });
+
+    nodemailerTransporter.sendMail(
+      {
+        from: sendFromEmail,
+        to: email,
+        subject: "Reset Password",
+        text: ResetPassword(user.name, token),
+      },
+      (err, info) => {
+        if (err) {
+          logger.error(`Error to send email: ${err}`);
+        }
+
+        if (info) {
+          logger.info(`Email sent: ${info.response}`);
+        }
+      }
+    );
+  }
+
+  return res.json({
+    message: "If the email exists, you will receive an email",
+  });
 });
 
 AuthRoutes.get("/profile", authMiddleware, async (req, res) => {
