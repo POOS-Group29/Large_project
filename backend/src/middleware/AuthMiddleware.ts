@@ -4,11 +4,11 @@ import logger from "../config/winston";
 import User from "../model/User";
 
 export const authMiddleware = async (req: any, res: any, next: any) => {
-  const token = req.headers.authorization.split(" ")[1];
+  const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
     res.status(401);
-    res.json({ message: "Not authorized" });
+    return res.json({ message: "Not authorized" });
   }
 
   try {
