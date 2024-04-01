@@ -16,7 +16,8 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useRef } from "react";
+import Globe from "react-globe.gl";
 
 const navigation = [
   { name: "Dashboard", href: "#", icon: HomeIcon, current: true },
@@ -38,7 +39,20 @@ const userNavigation = [
 
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [pointsData, setPointsData] = useState([]);
+  const globeRef = useRef();
 
+  const createCustomPoint = () => {
+    const name = prompt("Enter name for the point:");
+    const latitude = parseFloat(prompt("Enter latitude:"));
+    const longitude = parseFloat(prompt("Enter longitude:"));
+
+    if (!isNaN(latitude) && !isNaN(longitude)) {
+      setPointsData([...pointsData, { name, lat: latitude, lng: longitude }]);
+    } else {
+      alert("Please enter valid latitude and longitude values.");
+    }
+  };
   return (
     <>
       <div>
@@ -270,23 +284,9 @@ export default function Home() {
             />
 
             <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-              <form className="relative flex flex-1" action="#" method="GET">
-                <label htmlFor="search-field" className="sr-only">
-                  Search
-                </label>
-                <MagnifyingGlassIcon
-                  className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400"
-                  aria-hidden="true"
-                />
-                <input
-                  id="search-field"
-                  className="block h-full w-full border-0 py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
-                  placeholder="Search..."
-                  type="search"
-                  name="search"
-                />
-              </form>
               <div className="flex items-center gap-x-4 lg:gap-x-6">
+                {/* Add location Button */}
+                <button onClick={createCustomPoint}>Add Location</button>
                 <button
                   type="button"
                   className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
@@ -356,7 +356,24 @@ export default function Home() {
           </div>
 
           <main className="py-10">
-            <div className="px-4 sm:px-6 lg:px-8">{/* Your content */}</div>
+            <div
+              className="px-4 sm:px-6 lg:px-8"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: "-100px",
+              }}
+            >
+              {
+                <Globe
+                  ref={globeRef}
+                  pointsData={pointsData}
+                  globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
+                  backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
+                />
+              }
+            </div>
           </main>
         </div>
       </div>
