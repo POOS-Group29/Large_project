@@ -17,6 +17,7 @@ app.use(urlencoded({ extended: true }));
 
 // Routes
 app.use("/api/auth", AuthRoutes);
+app.use("/api/location", AuthRoutes);
 
 // Set port, listen for requests
 if (process.env.AWS_LAMBDA === undefined) {
