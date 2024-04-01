@@ -1,9 +1,9 @@
 import { json, urlencoded } from "body-parser";
 import cors from "cors";
 import express from "express";
-import { MongooseSetUp } from "./config/MongoConfig";
-import { AuthRoutes } from "./routes/auth";
 import serverless from "serverless-http";
+import { MongooseSetUp } from "./config/MongoConfig";
+import { routes } from "./routes";
 
 // Set up mongoose
 MongooseSetUp();
@@ -16,7 +16,7 @@ app.use(json());
 app.use(urlencoded({ extended: true }));
 
 // Routes
-app.use("/api/auth", AuthRoutes);
+app.use(routes);
 
 // Set port, listen for requests
 if (process.env.AWS_LAMBDA === undefined) {

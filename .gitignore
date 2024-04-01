@@ -30,3 +30,4 @@ yarn-error.log*
 *.lock.hcl
 
 local.tfvars
+.env

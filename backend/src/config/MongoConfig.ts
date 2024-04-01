@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Location from "../model/Location";
 
 const url = process.env.MONGO_URL;
 
@@ -9,8 +10,9 @@ if (!url) {
 export const MongooseSetUp = async () => {
   mongoose
     .connect(url)
-    .then(() => {
+    .then(async () => {
       console.log("Successfully connected to the database");
+      await Location.createIndexes();
     })
     .catch((err) => {
       console.error("Error connecting to the database", err);

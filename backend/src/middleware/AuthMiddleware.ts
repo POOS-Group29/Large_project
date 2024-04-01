@@ -1,6 +1,6 @@
-import logger from "config/winston";
 import jwt from "jsonwebtoken";
 import { AuthConfig } from "../config/AuthConfig";
+import logger from "../config/winston";
 import User from "../model/User";
 
 export const authMiddleware = async (req: any, res: any, next: any) => {
