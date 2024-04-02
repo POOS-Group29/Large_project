@@ -3,10 +3,8 @@ import cors from "cors";
 import express from "express";
 import serverless from "serverless-http";
 import { MongooseSetUp } from "./config/MongoConfig";
+import logger from "./config/winston";
 import { routes } from "./routes";
-
-// Set up mongoose
-MongooseSetUp();
 
 // Create a new express application instance
 const app = express();
@@ -18,12 +16,15 @@ app.use(urlencoded({ extended: true }));
 // Routes
 app.use(routes);
 
-// Set port, listen for requests
-if (process.env.AWS_LAMBDA === undefined) {
-  const PORT = process.env.PORT || 8080;
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}.`);
-  });
-}
+// Connect to MongoDB
+MongooseSetUp().then(() => {
+  // Set port, listen for requests
+  if (process.env.AWS_LAMBDA === undefined) {
+    const PORT = process.env.PORT || 8080;
+    app.listen(PORT, () => {
+      logger.info(`Server is running on port ${PORT}.`);
+    });
+  }
+});
 
 export const handler = serverless(app);

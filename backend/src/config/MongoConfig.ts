@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Location from "../model/Location";
+import logger from "./winston";
 
 const url = process.env.MONGO_URL;
 
@@ -8,17 +9,12 @@ if (!url) {
 }
 
 export const MongooseSetUp = async () => {
-  mongoose
-    .connect(url)
-    .then(async () => {
-      console.log("Successfully connected to the database");
-      await Location.createIndexes();
-    })
-    .catch((err) => {
-      console.error("Error connecting to the database", err);
-    });
-
-  mongoose.connection.on("error", (err) => {
-    console.error("Error connecting to the database", err);
-  });
+  try {
+    await mongoose.connect(url);
+    logger.info("Successfully connected to the database");
+    await Location.createIndexes();
+    logger.info("Successfully created indexes");
+  } catch (error) {
+    logger.error("Error connecting to the database", error);
+  }
 };

@@ -5,7 +5,7 @@ import { nodemailerTransporter, sendFromEmail } from "../config/nodemailer";
 import logger from "../config/winston";
 import { authMiddleware } from "../middleware/AuthMiddleware";
 import User from "../model/User";
-import { ResetPassword } from "../templates/ResetPassword";
+import { ResetPassword } from "../templates";
 
 export const AuthRoutes = express.Router();
 
@@ -86,6 +86,17 @@ AuthRoutes.post("/signup", async (req, res) => {
   return res.json({ message: "Invalid user data" });
 });
 
+AuthRoutes.get("/profile", authMiddleware, async (req, res) => {
+  // @ts-expect-error User is defined in the authMiddleware
+  const user = await User.findById(req.user._id);
+  if (user) {
+    res.json({ _id: user._id, name: user.name, email: user.email });
+  } else {
+    res.status(404);
+    res.json({ message: "User not found" });
+  }
+});
+
 AuthRoutes.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
   logger.info(`User ${email} is trying to reset password`);
@@ -93,8 +104,8 @@ AuthRoutes.post("/forgot-password", async (req, res) => {
   const user = await User.findOne({ email });
 
   if (user) {
-    const token = jwt.sign({ _id: user._id }, AuthConfig.secret, {
-      expiresIn: "1h",
+    const token = jwt.sign({ resetUserId: user._id }, AuthConfig.secret, {
+      expiresIn: 600,
     });
 
     nodemailerTransporter.sendMail(
@@ -117,13 +128,33 @@ AuthRoutes.post("/forgot-password", async (req, res) => {
   });
 });
 
-AuthRoutes.get("/profile", authMiddleware, async (req, res) => {
-  // @ts-expect-error User is defined in the authMiddleware
-  const user = await User.findById(req.user._id);
-  if (user) {
-    res.json({ _id: user._id, name: user.name, email: user.email });
-  } else {
-    res.status(404);
-    res.json({ message: "User not found" });
+AuthRoutes.post("/reset-password", async (req, res) => {
+  const { token, currentPassword, newPassword } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, AuthConfig.secret) as {
+      resetUserId?: string;
+      _id?: string;
+    };
+
+    // Reset password from email not requiring current password
+    if (decoded.resetUserId) {
+      const user = await User.findById(decoded.resetUserId);
+      if (user) {
+        user.password = newPassword;
+        await user.save();
+        return res.json({ message: "Password reset successfully" });
+      }
+    } else if (decoded._id) {
+      // Reset password from profile requiring current password
+      const user = await User.findById(decoded._id);
+      if (user && (await user.matchPasswords(currentPassword))) {
+        user.password = newPassword;
+        await user.save();
+        return res.json({ message: "Password reset successfully" });
+      }
+    }
+  } catch (error) {
+    return res.json({ message: "Invalid token" });
   }
 });
