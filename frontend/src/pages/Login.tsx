@@ -13,7 +13,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleSubmit = () => {
-    fetch("https://api.cop4331.xhoantran.com/api/auth/signin/", {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}auth/signin/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
