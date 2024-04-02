@@ -4,6 +4,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { ROUTES } from "../config/routes";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -55,7 +56,7 @@ export default function Login() {
               <p className="mt-2 text-sm leading-6 text-gray-500">
                 Not a member?{" "}
                 <Link
-                  to="/signup"
+                  to={ROUTES.SIGN_UP}
                   className="font-semibold text-blue-600 hover:text-blue-500"
                 >
                   Sign up now
@@ -161,7 +162,7 @@ export default function Login() {
 
                     <div className="text-sm leading-6">
                       <Link
-                        to="/forgot-password"
+                        to={ROUTES.FORGOT_PASSWORD}
                         className="font-semibold text-blue-600 hover:text-blue-500"
                       >
                         Forgot password?

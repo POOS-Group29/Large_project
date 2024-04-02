@@ -4,18 +4,16 @@ import {
 } from "@heroicons/react/20/solid";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { baseInstance } from "../config/ky";
+import { CommonAPI } from "../config/ky";
+import { ROUTES } from "../config/routes";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState({ message: "", isError: false });
 
   const handleSubmit = () => {
-    baseInstance
-      .post("auth/forgot-password/", {
-        json: { email },
-      })
-      .json()
+    CommonAPI.auth
+      .forgotPassword(email)
       .then(() => {
         setMessage({
           message: "If the email exists, you will receive an email",
@@ -117,7 +115,7 @@ export default function ForgotPassword() {
             <div className="mt-4 flex justify-center">
               <p className="leading-6">
                 <Link
-                  to="/signin"
+                  to={ROUTES.SIGN_IN}
                   className="text-sm font-semibold text-blue-600 hover:text-blue-500"
                 >
                   Back to sign in

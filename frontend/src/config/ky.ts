@@ -1,4 +1,10 @@
+import getCommonAPI from "common";
 import ky from "ky";
+
+export const CommonAPI = getCommonAPI({
+  prefixUrl: import.meta.env.VITE_API_BASE_URL || "",
+  getAuthToken: () => localStorage.getItem("token") || "",
+});
 
 export const baseInstance = ky.create({
   prefixUrl: import.meta.env.VITE_API_BASE_URL,
