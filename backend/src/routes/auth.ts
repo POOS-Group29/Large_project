@@ -1,9 +1,11 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import { AuthConfig } from "../config/AuthConfig";
+import { nodemailerTransporter, sendFromEmail } from "../config/nodemailer";
 import logger from "../config/winston";
 import { authMiddleware } from "../middleware/AuthMiddleware";
 import User from "../model/User";
+import { ResetPassword } from "../templates";
 
 export const AuthRoutes = express.Router();
 
@@ -37,7 +39,7 @@ AuthRoutes.post("/signup", async (req, res) => {
   if (user) {
     logger.error(`User ${email} already exists`);
     res.status(400);
-    res.json({ message: "User already exists" });
+    return res.json({ message: "User already exists" });
   }
 
   // Create a new user
@@ -48,8 +50,7 @@ AuthRoutes.post("/signup", async (req, res) => {
   } catch (error) {
     logger.error(`Error to save user ${email} to database: ${error}`);
     res.status(400);
-    res.json({ message: "Invalid user data" });
-    return;
+    return res.json({ message: "Invalid user data" });
   }
 
   if (newUser) {
@@ -58,13 +59,31 @@ AuthRoutes.post("/signup", async (req, res) => {
       expiresIn: AuthConfig.jwtExpiration,
     });
     logger.info(`User ${email} signed up`);
-    res.json({ token, user: { _id, name, email } });
-    return;
+
+    nodemailerTransporter.sendMail(
+      {
+        from: "no-reply@cop4331.xhoantran.com",
+        to: "xhoantran@gmail.com",
+        subject: "Message",
+        text: "I hope this message gets sent!",
+      },
+      (err, info) => {
+        if (err) {
+          logger.error(`Error to send email: ${err}`);
+        }
+
+        if (info) {
+          logger.info(`Email sent: ${info.response}`);
+        }
+      }
+    );
+
+    return res.json({ token, user: { _id, name, email } });
   }
 
   logger.error(`Error to sign up user ${email}`);
   res.status(400);
-  res.json({ message: "Invalid user data" });
+  return res.json({ message: "Invalid user data" });
 });
 
 AuthRoutes.get("/profile", authMiddleware, async (req, res) => {
@@ -75,5 +94,67 @@ AuthRoutes.get("/profile", authMiddleware, async (req, res) => {
   } else {
     res.status(404);
     res.json({ message: "User not found" });
+  }
+});
+
+AuthRoutes.post("/forgot-password", async (req, res) => {
+  const { email } = req.body;
+  logger.info(`User ${email} is trying to reset password`);
+
+  const user = await User.findOne({ email });
+
+  if (user) {
+    const token = jwt.sign({ resetUserId: user._id }, AuthConfig.secret, {
+      expiresIn: 600,
+    });
+
+    nodemailerTransporter.sendMail(
+      {
+        from: sendFromEmail,
+        to: email,
+        subject: "Reset Password",
+        text: ResetPassword(user.name, token),
+      },
+      (err, _) => {
+        if (err) {
+          logger.error(`Error to send email: ${err}`);
+        }
+      }
+    );
+  }
+
+  return res.json({
+    message: "If the email exists, you will receive an email",
+  });
+});
+
+AuthRoutes.post("/reset-password", async (req, res) => {
+  const { token, currentPassword, newPassword } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, AuthConfig.secret) as {
+      resetUserId?: string;
+      _id?: string;
+    };
+
+    // Reset password from email not requiring current password
+    if (decoded.resetUserId) {
+      const user = await User.findById(decoded.resetUserId);
+      if (user) {
+        user.password = newPassword;
+        await user.save();
+        return res.json({ message: "Password reset successfully" });
+      }
+    } else if (decoded._id) {
+      // Reset password from profile requiring current password
+      const user = await User.findById(decoded._id);
+      if (user && (await user.matchPasswords(currentPassword))) {
+        user.password = newPassword;
+        await user.save();
+        return res.json({ message: "Password reset successfully" });
+      }
+    }
+  } catch (error) {
+    return res.json({ message: "Invalid token" });
   }
 });

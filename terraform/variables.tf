@@ -24,3 +24,15 @@ variable "mongo_url" {
 variable "certificate_arn" {
   description = "The ARN of the SSL certificate to use for the ALB"
 }
+
+variable "mailgun_api_key" {
+  description = "The API key for the Mailgun service"
+}
+
+variable "mailgun_domain" {
+  description = "The domain for the Mailgun service"
+}
+
+variable "frontend_base_url" {
+  description = "The base URL for the frontend"
+}
