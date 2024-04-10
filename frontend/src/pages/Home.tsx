@@ -6,13 +6,14 @@ import { LocationDetail } from "../components/LocationDetail";
 import { Pagination } from "../components/Pagination";
 import { API } from "../services";
 import Dashboard from "./Dashboard";
+import { useDebounceCallback, useDebounceValue } from "usehooks-ts";
 
 const transformLocationData = (data: any) => {
   return data.map((location: any) => {
     return {
       ...location,
-      lat: location.location.coordinates[0],
-      lng: location.location.coordinates[1],
+      lat: location.location.coordinates[1],
+      lng: location.location.coordinates[0],
       rate: location.difficultyRateValue / location.difficultyRateCount,
     };
   });
@@ -21,19 +22,25 @@ const transformLocationData = (data: any) => {
 export default function Home() {
   const [pointsData, setPointsData] = useState<ICard[]>([]);
   const [selectedPoint, setSelectedPoint] = useState<ICard | null>(null);
+  const [pov, setPov] = useState({
+    lat: 0,
+    lng: 0,
+    altitude: 2.5
+  })
+  const setPovDebounced = useDebounceCallback(setPov, 50);
   const globeRef = useRef();
 
   useEffect(() => {
     API.location
       .list({
-        long: 0,
-        lat: 0,
+        long: pov.lng,
+        lat: pov.lat
       })
       .then((data: any) => {
         console.log(data);
         setPointsData(transformLocationData(data));
       });
-  }, []);
+  }, [pov]);
 
   return (
     <>
@@ -90,6 +97,7 @@ export default function Home() {
                   onPointClick={(point) => setSelectedPoint(point as any)}
                   globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
                   backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
+                  onZoom={(newPov) => setPovDebounced(newPov)}
                 />
               </div>
             </main>

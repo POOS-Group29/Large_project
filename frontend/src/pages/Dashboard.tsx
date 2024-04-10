@@ -1,4 +1,5 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
+import AddLocationPopup from "../components/AddLocationPopup"; // Import the AddLocationPopup component
 import { Menu, Popover, Transition } from "@headlessui/react";
 import { MagnifyingGlassIcon, UserCircleIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
@@ -24,6 +25,16 @@ const userNavigation = [
 
 export default function Dashboard(props: React.PropsWithChildren<object>) {
   const { children } = props;
+
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const openPopup = () => {
+    setIsPopupOpen(true);
+  };
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+  };
 
   return (
     <>
@@ -139,10 +150,12 @@ export default function Dashboard(props: React.PropsWithChildren<object>) {
 
                     <a
                       href="#"
+                      onClick={openPopup} // Call openPopup function when the anchor is clicked
                       className="ml-6 inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                     >
                       New Location
                     </a>
+                    {isPopupOpen && <AddLocationPopup onClose={closePopup} />}
                   </div>
                 </div>
               </div>
