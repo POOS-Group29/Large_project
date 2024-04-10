@@ -20,8 +20,8 @@ LocationRoutes.get("/", async (req, res) => {
           $geometry: {
             type: "Point",
             coordinates: [
-              parseFloat(long as string),
               parseFloat(lat as string),
+              parseFloat(long as string),
             ],
           },
         },
