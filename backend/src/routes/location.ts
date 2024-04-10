@@ -48,7 +48,7 @@ LocationRoutes.post("/", async (req, res) => {
       zip,
       location: {
         type: "Point",
-        coordinates: [parseFloat(long), parseFloat(lat)],
+        coordinates: [parseFloat(lat), parseFloat(long)],
       },
     });
     await location.save();
