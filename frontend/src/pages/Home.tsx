@@ -39,6 +39,8 @@ const userNavigation = [
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  console.log("Home.tsx");
+
   return (
     <>
       <div>
