@@ -5,6 +5,7 @@ import { nodemailerTransporter, sendFromEmail } from "../config/nodemailer";
 import logger from "../config/winston";
 import { authMiddleware } from "../middleware/AuthMiddleware";
 import User from "../model/User";
+import { VerificationEmail } from "../templates/Verification";
 import { ResetPassword } from "../templates";
 
 export const AuthRoutes = express.Router();
@@ -60,23 +61,24 @@ AuthRoutes.post("/signup", async (req, res) => {
     });
     logger.info(`User ${email} signed up`);
 
-    nodemailerTransporter.sendMail(
-      {
-        from: "no-reply@cop4331.xhoantran.com",
-        to: "xhoantran@gmail.com",
-        subject: "Message",
-        text: "I hope this message gets sent!",
-      },
-      (err, info) => {
-        if (err) {
-          logger.error(`Error to send email: ${err}`);
-        }
+    // Generate verification email using the template
+    const verificationEmail = VerificationEmail(email, token, name);
 
-        if (info) {
-          logger.info(`Email sent: ${info.response}`);
-        }
+    // Send verification email
+    const mailOptions = {
+      from: "no-reply@cop4331.xhoantran.com",
+      to: email,
+      subject: "Account Verification",
+      text: verificationEmail,
+    };
+
+    nodemailerTransporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        logger.error(`Error sending verification email to ${email}: ${err}`);
+      } else {
+        logger.info(`Verification email sent to ${email}: ${info.response}`);
       }
-    );
+    });
 
     return res.json({ token, user: { _id, name, email } });
   }
