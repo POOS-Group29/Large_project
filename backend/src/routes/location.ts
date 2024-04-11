@@ -1,6 +1,8 @@
 import express from "express";
+
 import logger from "../config/winston";
 import Location from "../model/Location";
+import { DifficultyRating } from "../model/Rating";
 
 export const LocationRoutes = express.Router();
 
@@ -63,7 +65,20 @@ LocationRoutes.post("/", async (req, res) => {
 LocationRoutes.get("/:id", async (req, res) => {
   const { id } = req.params;
   const location = await Location.findById(id);
-  res.json(location);
+  const rating = await DifficultyRating.findOne({
+    locationId: id,
+    // @ts-expect-error User ID is injected by the middleware
+    userId: req.user._id,
+  });
+
+  if (!location) {
+    return res.status(404).json({ message: "Location not found" });
+  }
+
+  res.json({
+    ...location.toJSON(),
+    userRating: rating,
+  });
 });
 
 // Update a location
