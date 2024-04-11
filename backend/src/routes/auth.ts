@@ -5,7 +5,7 @@ import { nodemailerTransporter, sendFromEmail } from "../config/nodemailer";
 import logger from "../config/winston";
 import { authMiddleware } from "../middleware/AuthMiddleware";
 import User from "../model/User";
-import { VerificationEmail } from "templates/Verification";
+import { VerificationEmail } from "../templates/Verification";
 import { ResetPassword } from "../templates";
 
 export const AuthRoutes = express.Router();
