@@ -1,17 +1,17 @@
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
+import { API } from '@/lib/common';
 import useTheme from '@/theme/hooks/useTheme';
 import { ApplicationScreenProps } from '@/types/navigation';
 import {
 	SignUpRequestSchema,
 	SignUpRequestSchemaType,
 } from '@/types/schemas/auth';
+import { errorSchema } from '@/types/schemas/error';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { HTTPError } from 'ky';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { Alert, SafeAreaView, Text, View } from 'react-native';
-import { signUp } from '@/services/auth';
-import { HTTPError } from 'ky';
-import { errorSchema } from '@/types/schemas/error';
 
 function SignUp({ navigation }: ApplicationScreenProps) {
 	const { layout, fonts, gutters, variant } = useTheme();
@@ -27,7 +27,7 @@ function SignUp({ navigation }: ApplicationScreenProps) {
 
 	const onSubmit: SubmitHandler<SignUpRequestSchemaType> = async data => {
 		try {
-			await signUp(data);
+			await API.auth.signUp(data);
 			navigation.replace('SignIn');
 		} catch (err) {
 			if (err instanceof HTTPError) {

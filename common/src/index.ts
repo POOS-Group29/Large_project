@@ -41,3 +41,5 @@ export default (props: ICommonAPI) => {
     rating: ratingServices(authenticatedInstance),
   };
 };
+
+

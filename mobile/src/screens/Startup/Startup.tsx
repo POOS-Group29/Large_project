@@ -4,10 +4,9 @@ import { ActivityIndicator, Text, View } from 'react-native';
 
 import { Brand } from '@/components/molecules';
 import { SafeScreen } from '@/components/template';
-import { useTheme } from '@/theme';
-
-import { fetchProfile } from '@/services/auth';
+import { API } from '@/lib/common';
 import { useAuthStorage } from '@/store/auth';
+import { useTheme } from '@/theme';
 import type { ApplicationScreenProps } from '@/types/navigation';
 
 function Startup({ navigation }: ApplicationScreenProps) {
@@ -16,14 +15,14 @@ function Startup({ navigation }: ApplicationScreenProps) {
 
 	const { isSuccess, isFetching, isError, data } = useQuery({
 		queryKey: ['startup'],
-		queryFn: () => fetchProfile(),
+		queryFn: () => API.auth.fetchProfile(),
 	});
 
 	useEffect(() => {
 		if (isSuccess) {
 			setIsAuthorized(true);
 			setUser(data);
-			navigation.navigate('Example');
+			navigation.navigate('Main');
 		}
 
 		if (isError) {

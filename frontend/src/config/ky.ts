@@ -1,4 +1,4 @@
-import getCommonAPI from "common";
+import getCommonAPI from "@xhoantran/common";
 import ky from "ky";
 
 export const CommonAPI = getCommonAPI({
