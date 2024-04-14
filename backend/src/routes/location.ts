@@ -36,6 +36,12 @@ LocationRoutes.get("/", async (req, res) => {
   }
 });
 
+// search locations api
+LocationRoutes.get('/search', async (req, res) => {
+  // TO DO
+});
+
+
 // Create a new location
 LocationRoutes.post("/", async (req, res) => {
   const { name, address, city, state, zip, lat, long } = req.body;
