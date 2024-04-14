@@ -6,7 +6,7 @@ export function CreateLocation() {
 	const createLocation = useCreateLocation();
 
 	return (
-		<View>
+		<View style = {{marginTop: 10}}>
 			<Button
 				buttonStyle={[]}
 				title="Create Location"

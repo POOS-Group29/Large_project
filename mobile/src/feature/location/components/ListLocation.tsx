@@ -9,6 +9,9 @@ import {
 	View,
 } from 'react-native';
 import { CreateLocation } from './CreateLocation';
+import { ScrollView } from 'react-native-gesture-handler';
+import { generateBorderColors, staticBorderStyles } from '@/theme/borders';
+import { Rating } from '@kolking/react-native-rating';
 
 interface ListLocationProps {
 	locations: LocationSchemaType[];
@@ -16,15 +19,16 @@ interface ListLocationProps {
 
 const styles = StyleSheet.create({
 	container: {
-		position: 'absolute',
+
 		bottom: 0,
 		right: 0,
 		left: 0,
-		top: '50%',
+
 		backgroundColor: 'white',
 		borderTopLeftRadius: 20,
 		borderTopRightRadius: 20,
-		padding: 20,
+		padding: 12,
+
 	},
 	slideBar: {
 		width: 40,
@@ -33,7 +37,38 @@ const styles = StyleSheet.create({
 		borderRadius: 5,
 		alignSelf: 'center',
 	},
+	scrollView: {
+		top: '5%',
+		width: '100%',  // Use full width of the screen
+		backgroundColor: '#ffffff',  // Light background color for the list
+	},
+	slideView: {
+		backgroundColor: '#ffffff',  // White background for each item
+		borderWidth: 1,
+		borderColor: '#e0e0e0',  // Lighter border color
+		borderRadius: 20,  // Rounded corners
+		padding: 16,  // Padding inside each item
+		marginBottom: 1,  // Space between items
+		// shadowColor: '#000',  // Shadow for 3D effect
+		// shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.1,
+		// shadowRadius: 6,
+		// elevation: 3,  // Elevation for Android
+	  },
+	  text: {
+		fontSize: 17,
+		color: '#333',  // Dark color for text for better readability
+		fontWeight: 'bold',  // Bold text for emphasis
+	  },
+	  subText: {
+		fontSize: 14,
+		color: '#666',  // Slightly lighter color for less important text
+		marginTop: 4,  // Space between main text and subtext
+	  }
+	
 });
+
+
 
 export function ListLocation(props: ListLocationProps) {
 	const { borders, gutters } = useTheme();
@@ -41,14 +76,18 @@ export function ListLocation(props: ListLocationProps) {
 
 	const [selectedLocation, setSelectedLocation] =
 		useState<LocationSchemaType | null>(null);
-
+	
+	const calculateRating = (sum:number, count:number) :number=>{
+		return count === 0 ? 0 : sum/count;
+	
+	}
 	return (
 		<View style={[styles.container]}>
 			{/* Slide bar */}
-			<View style={styles.slideBar} />
+			{/* <View style={styles.slideBar} /> */}
 
-			<CreateLocation />
-
+			<CreateLocation/>
+			
 			{selectedLocation ? (
 				<View>
 					<TouchableOpacity onPress={() => setSelectedLocation(null)}>
@@ -61,20 +100,33 @@ export function ListLocation(props: ListLocationProps) {
 					</View>
 				</View>
 			) : (
-				locations.map((location, locationId) => (
-					<View
-						style={[gutters.marginVertical_16, borders.gray900]}
-						key={locationId}
-					>
-						<Pressable onPress={() => setSelectedLocation(location)}>
-							<View>
-								<Text>{location.name}</Text>
-								<Text>{location.address}</Text>
-							</View>
-						</Pressable>
-					</View>
-				))
-			)}
+				
+				<ScrollView style={styles.scrollView}>
+					
+					{ locations.map((location, locationId) => (
+						<View
+							// style={[gutters.marginVertical_16, borders.gray900, styles.slideView]}
+							style={styles.slideView}
+							key={locationId}
+						>
+							<Pressable onPress={() => setSelectedLocation(location)}>
+								<View>
+									<Text style={styles.text}>{location.name}</Text>
+									<Text style={styles.subText}>{location.address}</Text>
+									<View style={{
+										flexDirection: 'row',
+									}}>
+										<Rating size={17} rating={calculateRating(location.difficultyRateValue, location.difficultyRateCount)} disabled />
+										<Text style={{marginLeft:5}}>{location.difficultyRateCount}</Text>
+									</View>
+								</View>
+							</Pressable>
+						</View>
+					))}
+				</ScrollView>
+			)
+			}
+			
 		</View>
 	);
 }

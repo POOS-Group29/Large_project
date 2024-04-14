@@ -1,9 +1,11 @@
 import { useListLocation } from '@/feature/location/api/list';
-import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import { View, Text, StyleSheet, Button } from 'react-native';
 import type { Region } from 'react-native-maps';
 import MapView, { Marker } from 'react-native-maps';
 import { useDebounceCallback } from 'usehooks-ts';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+
 
 import { CreateLocation } from '@/feature/location/components/CreateLocation';
 import { ListLocation } from '@/feature/location/components/ListLocation';
@@ -25,14 +27,43 @@ export default function Main() {
 		long: currentRegion.longitude,
 	});
 
+	console.log('listLocation', listLocation.data);
+	
 	useEffect(() => {
 		void listLocation.refetch();
 	}, [currentRegion]);
 
+	const styles = StyleSheet.create({
+		container: {
+			flex: 1,
+			padding: 24,
+			justifyContent: 'center',
+			backgroundColor: 'grey',
+		},
+		contentContainer: {
+			flex: 1,
+			alignItems: 'center',
+		},
+		
+	});
+
+	const bottomSheetRef = useRef<BottomSheet>(null);
+
+	// variables
+	const snapPoints = useMemo(() => ['25%', '50%', '90%'], []);
+
+	// callbacks
+	// const handlePresentModalPress = useCallback(() => {
+	// 	bottomSheetRef.current?.present();
+	// }, []);
+	const handleSheetChanges = useCallback((index: number) => {
+		console.log('handleSheetChanges', index);
+	}, []);
+	
 	return (
-		<View style={{ flex: 1 }}>
+		<View >
 			<MapView
-				style={{ flex: 1 }}
+				style={{ width: '100%', height: '100%' }}
 				onRegionChange={region => debouncedSetCurrentRegion(region)}
 				mapType="satelliteFlyover"
 				showsUserLocation
@@ -48,8 +79,20 @@ export default function Main() {
 						title={location.name}
 					/>
 				))}
+			
+			
 			</MapView>
-			<ListLocation locations={listLocation.data ?? []} />
+
+			
+			<BottomSheet
+					ref={bottomSheetRef}
+					onChange={handleSheetChanges}
+					snapPoints={snapPoints}
+				>
+
+						<ListLocation locations={listLocation.data ?? []} />
+
+			</BottomSheet> 
 		</View>
 	);
 }
