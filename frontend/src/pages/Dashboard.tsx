@@ -20,7 +20,7 @@ const navigation = [
 const userNavigation = [
   { name: "Your Profile", href: "#" },
   { name: "Settings", href: "#" },
-  { name: "Sign out", href: "#" },
+  { name: "Sign out", href: "signin" },
 ];
 
 export default function Dashboard(props: React.PropsWithChildren<object>) {
