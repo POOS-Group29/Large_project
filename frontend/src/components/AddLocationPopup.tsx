@@ -3,7 +3,6 @@ import { API } from '../services';
 
 interface Props {
   onClose: () => void;
-  createCustomPoint: () => void;
 }
 
 const AddLocationPopup: React.FC<Props> = ({ onClose }) => {
@@ -22,6 +21,18 @@ const AddLocationPopup: React.FC<Props> = ({ onClose }) => {
   const handleLongitudeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLongitude(event.target.value);
   };
+
+  // const handleCityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setName(event.target.value);
+  // };
+
+  // const handleStateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setLatitude(event.target.value);
+  // };
+
+  // const handleZipChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setLongitude(event.target.value);
+  // };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -155,7 +166,7 @@ const AddLocationPopup: React.FC<Props> = ({ onClose }) => {
             </button>
             <button
               type="submit"
-              onClick={()=>handleSubmit} // Call the createCustomPoint function when clicked
+              onClick={()=>handleSubmit} // Call the handleSubmit function when clicked
               className="px-4 py-2 bg-blue-500 text-white rounded-md"
             >
               Add

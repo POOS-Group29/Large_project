@@ -99,8 +99,9 @@ export const Pagination = () => {
           <li>
             <a
               href="#"
-              aria-current="page"
-              className="flex items-center justify-center px-3 h-8 border hover:bg-blue-100 hover:text-blue-700 border-gray-700 bg-gray-700 text-white"
+              //aria-current="page"
+              //className="flex items-center justify-center px-3 h-8 border hover:bg-blue-100 hover:text-blue-700 border-gray-700 bg-gray-700 text-white"
+              className="flex items-center justify-center px-3 h-8 leading-tight border bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white"
             >
               3
             </a>

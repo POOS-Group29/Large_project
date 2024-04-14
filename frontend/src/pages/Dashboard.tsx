@@ -18,9 +18,9 @@ const navigation = [
   { name: "Directory", href: "#", current: false },
 ];
 const userNavigation = [
-  { name: "Your Profile", href: "#" },
-  { name: "Settings", href: "#" },
-  { name: "Sign out", href: "#" },
+  // { name: "Your Profile", href: "#" },
+  // { name: "Settings", href: "#" },
+  { name: "Sign out", href: "/login" },
 ];
 
 export default function Dashboard(props: React.PropsWithChildren<object>) {
@@ -57,8 +57,8 @@ export default function Dashboard(props: React.PropsWithChildren<object>) {
                     <div className="flex flex-shrink-0 items-center">
                       <a href="#">
                         <img
-                          className="h-8 w-auto"
-                          src="https://tailwindui.com/img/logos/mark.svg?color=blue&shade=600"
+                          className="h-12 w-auto"
+                          src="/public/scubadiver.jpeg"
                           alt="Your Company"
                         />
                       </a>

@@ -27,7 +27,7 @@ export default function Home() {
     lng: 0,
     altitude: 2.5
   })
-  const setPovDebounced = useDebounceCallback(setPov, 50);
+  const setPovDebounced = useDebounceCallback(setPov, 10);
   const globeRef = useRef();
 
   useEffect(() => {
