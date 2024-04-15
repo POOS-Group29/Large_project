@@ -9,7 +9,8 @@
     "start": "node dist/server.js",
     "dev": "nodemon -r dotenv/config src/server.ts",
     "test": "jest",
-    "scape": "dotenv -e .env ts-node src/cli/scape.ts"
+    "scrape": "ts-node src/cli/scrape.ts",
+    "transform": "ts-node src/cli/transform.ts"
   },
   "author": "",
   "license": "ISC",
@@ -25,7 +26,8 @@
     "nodemailer": "^6.9.13",
     "nodemailer-mailgun-transport": "^2.1.5",
     "serverless-http": "^3.2.0",
-    "winston": "^3.12.0"
+    "winston": "^3.12.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
