@@ -8,4 +8,5 @@ if (!process.env.FRONTEND_BASE_URL) {
 export const FRONTEND_BASE_URL = process.env.FRONTEND_BASE_URL;
 export const FRONTEND_ROUTES = {
   resetPassword: `${FRONTEND_BASE_URL}/auth/reset-password`,
+  verifyEmail: `${FRONTEND_BASE_URL}/auth/verify-email`,
 };

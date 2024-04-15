@@ -47,11 +47,12 @@ export const LocationDetail = (props: LocationDetailProps) => {
   return (
     <>
       {/* Back button */}
-      <div className="flex flex-row gap-x-1 items-center mb-4">
+      <div
+        className="flex flex-row gap-x-1 items-center mb-4"
+        onClick={onClickBack}
+      >
         <ChevronLeftIcon className="h-5 w-5 text-white" />
-        <button onClick={onClickBack} className="text-white">
-          Back
-        </button>
+        <button className="text-white">Back</button>
       </div>
 
       {location ? (
