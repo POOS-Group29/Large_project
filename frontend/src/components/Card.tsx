@@ -17,10 +17,10 @@ export const Card = (props: ICard) => {
         className="flex flex-col p-4 bg-white shadow-md rounded-lg"
         onClick={onClick}
       >
-        {/* <img
-          className="h-auto max-w-lg rounded-lg"
-          src="https://blog-assets.thedyrt.com/uploads/2019/07/shutterstock_385210003-1.jpg"
-        /> */}
+        <img
+          className="w-full aspect-video object-cover rounded-lg"
+          src="https://d2p1cf6997m1ir.cloudfront.net/media/thumbnails/73/08/7308015568c5a4ce1ae7d0188490e46b.webp"
+        />
 
         <div className="flex flex-row">
           <div className="text-lg font-bold">{name}</div>
