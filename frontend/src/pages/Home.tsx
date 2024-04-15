@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from "react";
 import Globe from "react-globe.gl";
+import { useDebounceCallback } from "usehooks-ts";
 import { Card, ICard } from "../components/Card";
 import { LocationDetail } from "../components/LocationDetail";
 import { Pagination } from "../components/Pagination";
 import { API } from "../services";
 import Dashboard from "./Dashboard";
-import { useDebounceCallback, useDebounceValue } from "usehooks-ts";
 
 const transformLocationData = (data: any) => {
   return data.map((location: any) => {
@@ -27,14 +27,14 @@ export default function Home() {
     lng: 0,
     altitude: 2.5
   })
-  const setPovDebounced = useDebounceCallback(setPov, 10);
+  const setPovDebounced = useDebounceCallback(setPov, 50);
   const globeRef = useRef();
 
   useEffect(() => {
     API.location
       .list({
         long: pov.lng,
-        lat: pov.lat
+        lat: pov.lat,
       })
       .then((data: any) => {
         console.log(data);

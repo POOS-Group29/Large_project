@@ -1,6 +1,6 @@
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
-import { signIn } from '@/services/auth';
+import { API } from '@/lib/common';
 import { useAuthStorage } from '@/store/auth';
 import useTheme from '@/theme/hooks/useTheme';
 import { ApplicationScreenProps } from '@/types/navigation';
@@ -27,7 +27,7 @@ function SignIn({ navigation }: ApplicationScreenProps) {
 
 	const onSubmit: SubmitHandler<SignInRequestSchemaType> = async data => {
 		try {
-			const res = await signIn(data);
+			const res = await API.auth.signIn(data);
 			setToken(res.token);
 			setUser(res.user);
 			setIsAuthorized(true);

@@ -1,6 +1,8 @@
 import express from "express";
+
 import logger from "../config/winston";
 import Location from "../model/Location";
+import { DifficultyRating } from "../model/Rating";
 
 export const LocationRoutes = express.Router();
 
@@ -28,7 +30,7 @@ LocationRoutes.get("/", async (req, res) => {
       },
     })
       .skip((parseInt(page as string) - 1) * 10)
-      .limit(10);
+      .limit(25);
     return res.json(locations);
   } catch (error) {
     logger.error(error);
@@ -54,7 +56,7 @@ LocationRoutes.post("/", async (req, res) => {
       zip,
       location: {
         type: "Point",
-        coordinates: [parseFloat(long), parseFloat(lat)],
+        coordinates: [parseFloat(lat), parseFloat(long)],
       },
     });
     await location.save();
@@ -69,7 +71,20 @@ LocationRoutes.post("/", async (req, res) => {
 LocationRoutes.get("/:id", async (req, res) => {
   const { id } = req.params;
   const location = await Location.findById(id);
-  res.json(location);
+  const rating = await DifficultyRating.findOne({
+    locationId: id,
+    // @ts-expect-error User ID is injected by the middleware
+    userId: req.user._id,
+  });
+
+  if (!location) {
+    return res.status(404).json({ message: "Location not found" });
+  }
+
+  res.json({
+    ...location.toJSON(),
+    userRating: rating,
+  });
 });
 
 // Update a location

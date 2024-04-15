@@ -4,6 +4,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { ROUTES } from "../config/routes";
 
 export default function Example() {
   const [email, setEmail] = useState("");
@@ -12,7 +13,7 @@ export default function Example() {
   const [message, setMessage] = useState({ message: "", isError: false });
 
   const handleSubmit = () => {
-    fetch("https://api.cop4331.xhoantran.com/api/auth/signup/", {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}auth/signup/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -60,7 +61,7 @@ export default function Example() {
               <p className="mt-2 text-sm leading-6 text-gray-500">
                 Already a member?{" "}
                 <Link
-                  to="/signin"
+                  to={ROUTES.SIGN_IN}
                   className="font-semibold text-blue-600 hover:text-blue-500"
                 >
                   Sign in

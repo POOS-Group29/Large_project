@@ -1,16 +1,13 @@
-import React, { Fragment, useState } from "react";
-import AddLocationPopup from "../components/AddLocationPopup"; // Import the AddLocationPopup component
 import { Menu, Popover, Transition } from "@headlessui/react";
 import { MagnifyingGlassIcon, UserCircleIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import React, { Fragment, useEffect, useState } from "react";
+import AddLocationPopup from "../components/AddLocationPopup";
+import { API } from "../services";
+import { HTTPError } from "ky";
+import { ROUTES } from "../config/routes";
 
-const user = {
-  name: "Chelsea Hagon",
-  email: "chelsea.hagon@example.com",
-  imageUrl:
-    "https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-};
 const navigation = [
   { name: "Dashboard", href: "#", current: true },
   { name: "Calendar", href: "#", current: false },
@@ -18,15 +15,25 @@ const navigation = [
   { name: "Directory", href: "#", current: false },
 ];
 const userNavigation = [
-  // { name: "Your Profile", href: "#" },
-  // { name: "Settings", href: "#" },
-  { name: "Sign out", href: "/login" },
+  // { name: "Your Profile", onClick: () => {} },
+  // { name: "Settings", onClick: () => {} },
+  {
+    name: "Sign out",
+    onClick: () => {
+      localStorage.removeItem("token");
+      window.location.href = ROUTES.SIGN_IN;
+    },
+  },
 ];
 
 export default function Dashboard(props: React.PropsWithChildren<object>) {
   const { children } = props;
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [user, setUser] = useState({
+    name: "",
+    email: "",
+  });
 
   const openPopup = () => {
     setIsPopupOpen(true);
@@ -35,6 +42,24 @@ export default function Dashboard(props: React.PropsWithChildren<object>) {
   const closePopup = () => {
     setIsPopupOpen(false);
   };
+
+  useEffect(() => {
+    API.auth
+      .fetchProfile()
+      .then((user) =>
+        setUser({
+          name: user.name,
+          email: user.email,
+        })
+      )
+      .catch((error) => {
+        if (error instanceof HTTPError) {
+          if (error.response.status === 401) {
+            window.location.href = ROUTES.SIGN_IN;
+          }
+        }
+      });
+  }, []);
 
   return (
     <>
@@ -133,7 +158,7 @@ export default function Dashboard(props: React.PropsWithChildren<object>) {
                             <Menu.Item key={item.name}>
                               {({ active }) => (
                                 <a
-                                  href={item.href}
+                                  onClick={item.onClick}
                                   className={clsx(
                                     active ? "bg-gray-100" : "",
                                     "block px-4 py-2 text-sm text-gray-700"
@@ -181,10 +206,9 @@ export default function Dashboard(props: React.PropsWithChildren<object>) {
                 <div className="border-t border-gray-200 pb-3 pt-4">
                   <div className="mx-auto flex max-w-3xl items-center px-4 sm:px-6">
                     <div className="flex-shrink-0">
-                      <img
-                        className="h-10 w-10 rounded-full"
-                        src={user.imageUrl}
-                        alt=""
+                      <UserCircleIcon
+                        className="h-10 w-10 rounded-full text-gray-400"
+                        aria-hidden="true"
                       />
                     </div>
                     <div className="ml-3">
@@ -208,7 +232,7 @@ export default function Dashboard(props: React.PropsWithChildren<object>) {
                     {userNavigation.map((item) => (
                       <a
                         key={item.name}
-                        href={item.href}
+                        onClick={item.onClick}
                         className="block rounded-md px-3 py-2 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900"
                       >
                         {item.name}

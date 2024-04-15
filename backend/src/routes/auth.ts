@@ -5,6 +5,7 @@ import { nodemailerTransporter, sendFromEmail } from "../config/nodemailer";
 import logger from "../config/winston";
 import { authMiddleware } from "../middleware/AuthMiddleware";
 import User from "../model/User";
+import { VerificationEmail } from "../templates/Verification";
 import { ResetPassword } from "../templates";
 
 export const AuthRoutes = express.Router();
@@ -17,9 +18,19 @@ AuthRoutes.post("/signin", async (req, res) => {
   if (user && (await user.matchPasswords(password))) {
     const { _id, name, email } = user;
     logger.info(`User ${email} signed in`);
-    const token = jwt.sign({ _id }, AuthConfig.secret, {
-      expiresIn: AuthConfig.jwtExpiration,
-    });
+    const token = jwt.sign(
+      {
+        user: {
+          _id,
+          name,
+          email,
+        },
+      },
+      AuthConfig.secret,
+      {
+        expiresIn: AuthConfig.jwtExpiration,
+      }
+    );
     res.json({ token, user: { _id, name, email } });
     return;
   }
@@ -55,28 +66,26 @@ AuthRoutes.post("/signup", async (req, res) => {
 
   if (newUser) {
     const { _id, name, email } = newUser;
-    const token = jwt.sign({ _id }, AuthConfig.secret, {
+    const token = jwt.sign({ verifyUserId: _id }, AuthConfig.secret, {
       expiresIn: AuthConfig.jwtExpiration,
     });
     logger.info(`User ${email} signed up`);
 
-    nodemailerTransporter.sendMail(
-      {
-        from: "no-reply@cop4331.xhoantran.com",
-        to: "xhoantran@gmail.com",
-        subject: "Message",
-        text: "I hope this message gets sent!",
-      },
-      (err, info) => {
-        if (err) {
-          logger.error(`Error to send email: ${err}`);
-        }
+    // Send verification email
+    const mailOptions = {
+      from: "no-reply@cop4331.xhoantran.com",
+      to: email,
+      subject: "Account Verification",
+      text: VerificationEmail(email, token, name),
+    };
 
-        if (info) {
-          logger.info(`Email sent: ${info.response}`);
-        }
+    nodemailerTransporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        logger.error(`Error sending verification email to ${email}: ${err}`);
+      } else {
+        logger.info(`Verification email sent to ${email}: ${info.response}`);
       }
-    );
+    });
 
     return res.json({ token, user: { _id, name, email } });
   }
@@ -84,6 +93,32 @@ AuthRoutes.post("/signup", async (req, res) => {
   logger.error(`Error to sign up user ${email}`);
   res.status(400);
   return res.json({ message: "Invalid user data" });
+});
+
+AuthRoutes.post("/verify-email", async (req, res) => {
+  const { token, email } = req.body;
+
+  try {
+    const decoded = jwt.verify(token as string, AuthConfig.secret) as {
+      verifyUserId?: string;
+    };
+
+    if (decoded.verifyUserId) {
+      const user = await User.findById(decoded.verifyUserId);
+      logger.info(`User ${email} is trying to verify email`);
+
+      if (user && user.email === email) {
+        user.verified = true;
+        await user.save();
+        return res.json({ message: "Email verified" });
+      }
+    }
+  } catch (error) {
+    logger.error(`Error to verify email: ${error}`);
+    return res.json({ message: "Invalid token" });
+  }
+
+  return res.json({ message: "Invalid token" });
 });
 
 AuthRoutes.get("/profile", authMiddleware, async (req, res) => {
