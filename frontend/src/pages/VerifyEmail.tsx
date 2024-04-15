@@ -16,7 +16,7 @@ export default function VerifyEmail() {
   const navigate = useNavigate();
 
   const handleSubmit = () => {
-    fetch(`${import.meta.env.VITE_API_BASE_URL}api/auth/verify-email/`, {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}auth/verify-email/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
