@@ -23,6 +23,13 @@ export const LocationSchema = z.object({
     type: z.string(),
     coordinates: z.tuple([z.number(), z.number()]),
   }),
+  types: z.array(z.string()),
+  marineLife: z.array(z.string()),
+  image: z.string().nullable(),
+  maximumDepth: z.object({
+    metters: z.number(),
+    feet: z.number(),
+  }).nullable(),
   difficultyRateCount: z.number(),
   difficultyRateValue: z.number(),
   createdAt: z.string(),
