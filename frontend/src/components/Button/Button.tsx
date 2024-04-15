@@ -1,12 +1,15 @@
 import clsx from "clsx";
 import React from "react";
 
-import { Spinner } from "./Spinner";
+import { Spinner } from "../Spinner";
 
 const variants = {
-  primary: "bg-blue-600 text-white hover:bg-blue-500  focus-visible:outline-blue-600",
-  inverse: "bg-white text-black border border-gray-300 hover:bg-gray-100 focus-visible:outline-gray-300",
-  danger: "bg-red-600 text-white hover:bg-red-500 focus-visible:outline-red-600",
+  primary:
+    "bg-blue-600 text-white hover:bg-blue-500  focus-visible:outline-blue-600",
+  inverse:
+    "bg-white text-black border border-gray-300 hover:bg-gray-100 focus-visible:outline-gray-300",
+  danger:
+    "bg-red-600 text-white hover:bg-red-500 focus-visible:outline-red-600",
 };
 
 const sizes = {
@@ -54,7 +57,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {isLoading && <Spinner size="sm" className="text-current" />}
         {!isLoading && startIcon}
-        <span className="mx-2">{props.children}</span> {!isLoading && endIcon}
+        <span className="mx-2" data-testid="button-text">
+          {props.children}
+        </span>{" "}
+        {!isLoading && endIcon}
       </button>
     );
   }
