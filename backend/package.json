@@ -10,7 +10,7 @@
     "dev": "nodemon -r dotenv/config src/server.ts",
     "test": "jest",
     "scrape": "ts-node src/cli/scrape.ts",
-    "transform": "ts-node src/cli/transform.ts"
+    "persist": "dotenv -e .env ts-node src/cli/persist.ts"
   },
   "author": "",
   "license": "ISC",

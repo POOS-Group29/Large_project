@@ -1,5 +1,8 @@
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, write, writeFileSync } from "fs";
 import z from "zod";
+
+import { MongooseSetUp } from "../config/MongoConfig";
+import Location from "../model/Location";
 
 const ImageSchema = z.object({
   "800x800": z.string(),
@@ -19,11 +22,12 @@ const MaximumDepthSchema = z.object({
 
 const DiveSiteSchema = z.object({
   id: z.number(),
-  images: z.array(ImageSchema),
-  marineLife: z.array(z.string()),
+  travelUrl: z.string(),
+
   maximumDepth: MaximumDepthSchema.nullable(),
   title: z.string(),
-  travelUrl: z.string(),
+  images: z.array(ImageSchema),
+  marineLife: z.array(z.string()),
   types: z.array(z.string()),
 });
 
@@ -59,16 +63,45 @@ const diveSitesTransformed = diveSites.map((site) => {
 
   if (!coordinate) {
     console.warn(`Coordinate not found for dive site with id: ${site.id}`);
+    return null;
   }
 
-  return {
-    ...site,
-    coordinate,
-  };
+  return new Location({
+    name: site.title,
+    location: {
+      type: "Point",
+      coordinates: [coordinate.longitude, coordinate.latitude],
+    },
+    types: site.types,
+    marineLife: site.marineLife,
+    image: site.images.length > 0 ? site.images[0].origin : undefined,
+    maximumDepth: site.maximumDepth
+      ? {
+          metters: site.maximumDepth.METERS.value,
+          feet: site.maximumDepth.FEET.value,
+        }
+      : undefined,
+  });
 });
 
-// Write transformed dive sites data
-writeFileSync(
-  "data/dive-sites-transformed.json",
-  JSON.stringify(diveSitesTransformed, null, 2)
-);
+//Persist dive sites data
+MongooseSetUp().then(async () => {
+  // Drop existing dive sites data
+  await Location.deleteMany({});
+
+  // Break down the dive sites data into chunks of 100
+  const chunkSize = 50;
+  const diveSitesChunks = [];
+  for (let i = 0; i < diveSitesTransformed.length; i += chunkSize) {
+    diveSitesChunks.push(diveSitesTransformed.slice(i, i + chunkSize));
+  }
+
+  // Persist dive sites data
+  for (const chunk of diveSitesChunks) {
+    try {
+      await Location.insertMany(chunk);
+    } catch (error) {
+      console.error(`Chunk index ${diveSitesChunks.indexOf(chunk)} failed`);
+    }
+  }
+});
