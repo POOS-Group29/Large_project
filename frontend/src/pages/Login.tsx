@@ -257,7 +257,7 @@ export default function Login() {
         <div className="relative hidden w-0 flex-1 lg:block">
           <img
             className="absolute inset-0 h-full w-full object-cover"
-            src="../../public/auth_bg.png"
+            src="/auth_bg.png"
             alt=""
           />
         </div>
