@@ -8,8 +8,8 @@ import { ROUTES } from "../config/routes";
 
 export default function VerifyEmail() {
   const [searchParams] = useSearchParams();
-  const email = searchParams.get("email");
-  const token = searchParams.get("token");
+  const email = decodeURIComponent(searchParams.get("email") || "");
+  const token = decodeURIComponent(searchParams.get("token") || "");
 
   const [message, setMessage] = useState({ message: "", isError: false });
 
