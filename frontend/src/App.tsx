@@ -4,6 +4,8 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ResetPassword from "./pages/ResetPassword";
+import VerifyEmail from "./pages/VerifyEmail";
+import { ROUTES } from "./config/routes";
 
 const App = () => {
   return (
@@ -11,11 +13,12 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" index element={<Home />} />
-          <Route path="/auth/forgot-password" element={<ForgotPassword />} />
-          <Route path="/auth/reset-password" element={<ResetPassword />} />
-          <Route path="/auth/signin" index element={<Login />} />
-          <Route path="/auth/signup" index element={<Register />} />
-          <Route path="*" element={<Navigate to="/auth/signin" />} />
+          <Route path="/auth/verify-email" element={<VerifyEmail />} />
+          <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPassword />} />
+          <Route path={ROUTES.RESET_PASSWORD} element={<ResetPassword />} />
+          <Route path={ROUTES.SIGN_IN} index element={<Login />} />
+          <Route path={ROUTES.SIGN_UP} index element={<Register />} />
+          <Route path="*" element={<Navigate to={ROUTES.SIGN_IN} />} />
         </Routes>
       </BrowserRouter>
     </>

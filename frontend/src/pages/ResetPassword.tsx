@@ -5,6 +5,7 @@ import {
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { baseInstance } from "../config/ky";
+import { ROUTES } from "../config/routes";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ export default function ResetPassword() {
         });
         count--;
         if (count < 0) {
-          navigate("/auth/signin");
+          navigate(ROUTES.SIGN_IN);
         }
       }, 1000);
     }

@@ -42,8 +42,6 @@ export default function Home() {
       });
   }, [pov]);
 
-  console.log("Home.tsx");
-
   return (
     <>
       <Dashboard>
