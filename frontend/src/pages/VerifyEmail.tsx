@@ -2,9 +2,13 @@ import {
   CheckCircleIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/20/solid";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
+
+import { Button } from "../components/Button";
 import { ROUTES } from "../config/routes";
+import { API } from "../services";
 
 export default function VerifyEmail() {
   const [searchParams] = useSearchParams();
@@ -12,31 +16,49 @@ export default function VerifyEmail() {
   const token = decodeURIComponent(searchParams.get("token") || "");
 
   const [message, setMessage] = useState({ message: "", isError: false });
+  const [redirect, setRedirect] = useState(false);
 
   const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    fetch(`${import.meta.env.VITE_API_BASE_URL}auth/verify-email/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, token }),
-    })
-      .then((response) => {
-        if (response.status === 200) {
-          setMessage({ message: "Email verified", isError: false });
+  useEffect(() => {
+    if (redirect) {
+      let count = 3;
+      setInterval(() => {
+        setMessage({
+          message: `Redirecting in ${count}...`,
+          isError: false,
+        });
+        count--;
+        if (count < 0) {
           navigate(ROUTES.SIGN_IN);
-        } else {
-          response.json().then((data) => {
-            setMessage({ message: data.message, isError: true });
-          });
         }
-      })
-      .catch(() => {
-        setMessage({ message: "An error occurred", isError: true });
+      }, 1000);
+    }
+  }, [navigate, redirect]);
+
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm({
+    defaultValues: {
+      email,
+      token,
+    },
+  });
+
+  const onSubmit = handleSubmit(async () => {
+    try {
+      await API.auth.verifyEmail({
+        email,
+        token,
       });
-  };
+      setMessage({ message: "Email verified", isError: false });
+      setRedirect(true);
+    } catch (error) {
+      console.error(error);
+      setMessage({ message: "An error occurred", isError: true });
+    }
+  });
 
   return (
     <>
@@ -111,13 +133,14 @@ export default function VerifyEmail() {
                   </div>
 
                   <div>
-                    <button
+                    <Button
                       type="button"
-                      className="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                      onClick={handleSubmit}
+                      size="sm"
+                      onClick={onSubmit}
+                      disabled={isSubmitting}
                     >
                       Verify email
-                    </button>
+                    </Button>
                   </div>
                 </form>
               </div>

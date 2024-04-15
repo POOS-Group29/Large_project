@@ -2,42 +2,57 @@ import {
   CheckCircleIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/20/solid";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { HTTPError } from "ky";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
+import { z } from "zod";
+
+import { Button } from "../components/Button";
 import { ROUTES } from "../config/routes";
+import { API } from "../services";
+
+const LoginSchema = z.object({
+  email: z.string().email(),
+  password: z.string(),
+});
+
+const defaultValues = {
+  email: "",
+  password: "",
+};
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [message, setMessage] = useState({ message: "", isError: false });
-
   const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    fetch(`${import.meta.env.VITE_API_BASE_URL}auth/signin/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    })
-      .then((response) => {
-        if (response.status === 200) {
-          setMessage({ message: "Logged in successfully", isError: false });
-          response.json().then((data) => {
-            localStorage.setItem("token", data.token);
-          });
-          navigate("/");
-        } else {
-          response.json().then((data) => {
-            setMessage({ message: data.message, isError: true });
-          });
-        }
-      })
-      .catch(() => {
-        setMessage({ message: "An error occurred", isError: true });
+  const methods = useForm({
+    resolver: zodResolver(LoginSchema),
+    defaultValues,
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methods;
+
+  const onSubmit = handleSubmit(async (values) => {
+    try {
+      const res = await API.auth.signIn(values);
+      setMessage({
+        message: "Logged in successfully",
+        isError: false,
       });
-  };
+      localStorage.setItem("token", res.token);
+      navigate(ROUTES.DASHBOARD);
+    } catch (error) {
+      if (error instanceof HTTPError && error.response.status === 401) {
+        setMessage({ message: "Invalid email or password", isError: true });
+      }
+    }
+  });
 
   return (
     <>
@@ -110,14 +125,10 @@ export default function Login() {
                       Email address
                     </label>
                     <input
-                      id="email"
-                      name="email"
+                      {...register("email")}
                       type="email"
                       autoComplete="email"
                       required
-                      onInput={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setEmail(e.target.value)
-                      }
                       className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
                     />
                   </div>
@@ -131,14 +142,10 @@ export default function Login() {
                     </label>
                     <div className="mt-2">
                       <input
-                        id="password"
-                        name="password"
+                        {...register("password")}
                         type="password"
                         autoComplete="current-password"
                         required
-                        onInput={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          setPassword(e.target.value)
-                        }
                         className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
                       />
                     </div>
@@ -171,13 +178,15 @@ export default function Login() {
                   </div>
 
                   <div>
-                    <button
+                    <Button
                       type="button"
-                      className="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                      onClick={handleSubmit}
+                      size="sm"
+                      onClick={onSubmit}
+                      isLoading={isSubmitting}
+                      className="w-full"
                     >
                       Sign in
-                    </button>
+                    </Button>
                   </div>
                 </form>
               </div>
