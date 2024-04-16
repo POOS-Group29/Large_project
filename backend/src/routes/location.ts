@@ -48,7 +48,7 @@ LocationRoutes.get("/", async (req, res) => {
       },
     })
       .skip((parseInt(page as string) - 1) * 10)
-      .limit(25);
+      .limit(100);
     return res.json(locations);
   } catch (error) {
     logger.error(error);
