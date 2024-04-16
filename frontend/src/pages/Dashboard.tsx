@@ -2,11 +2,11 @@ import { Menu, Popover, Transition } from "@headlessui/react";
 import { MagnifyingGlassIcon, UserCircleIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import { HTTPError } from "ky";
 import React, { Fragment, useEffect, useState } from "react";
 import AddLocationPopup from "../components/AddLocationPopup";
-import { API } from "../services";
-import { HTTPError } from "ky";
 import { ROUTES } from "../config/routes";
+import { API } from "../services";
 
 const navigation = [
   { name: "Dashboard", href: "#", current: true },

@@ -56,6 +56,8 @@ LocationRoutes.get("/", async (req, res) => {
   }
 });
 
+
+
 // Create a new location
 LocationRoutes.post("/", async (req, res) => {
   const { name, address, city, state, zip, lat, long } = req.body;

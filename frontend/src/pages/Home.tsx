@@ -34,8 +34,8 @@ export default function Home() {
   const [pov, setPov] = useState({
     lat: 0,
     lng: 0,
-    altitude: 2.5,
-  });
+    altitude: 2.5
+  })
   const setPovDebounced = useDebounceCallback(setPov, 50);
   const globeRef = useRef();
 
@@ -71,6 +71,7 @@ export default function Home() {
                     <>
                       {pointsData.map((point, index) => (
                         <Card
+                          globeRef={globeRef}
                           onClick={() => setSelectedPoint(point)}
                           key={index}
                           location={point}

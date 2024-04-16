@@ -27,6 +27,7 @@ export const LocationSchema = z.object({
   types: z.array(z.string()),
   marineLife: z.array(z.string()),
   image: z.string().nullish(),
+  images: z.array(z.string()),
   maximumDepth: z
     .object({
       metters: z.number(),

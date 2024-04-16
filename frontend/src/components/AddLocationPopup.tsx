@@ -24,6 +24,18 @@ const AddLocationPopup: React.FC<Props> = ({ onClose }) => {
     setLongitude(event.target.value);
   };
 
+  // const handleCityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setName(event.target.value);
+  // };
+
+  // const handleStateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setLatitude(event.target.value);
+  // };
+
+  // const handleZipChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setLongitude(event.target.value);
+  // };
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
