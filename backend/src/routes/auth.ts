@@ -5,8 +5,8 @@ import { nodemailerTransporter, sendFromEmail } from "../config/nodemailer";
 import logger from "../config/winston";
 import { authMiddleware } from "../middleware/AuthMiddleware";
 import User from "../model/User";
-import { VerificationEmail } from "../templates/Verification";
 import { ResetPassword } from "../templates";
+import { sendVerificationMail } from "mail/sendVerificationMail";
 
 export const AuthRoutes = express.Router();
 
@@ -18,13 +18,20 @@ AuthRoutes.post("/signin", async (req, res) => {
   if (user && (await user.matchPasswords(password))) {
     const { _id, name, email, verified } = user;
     logger.info(`User ${email} signed in`);
+
+    if (!verified) {
+      logger.error(`User ${email} is not verified`);
+      sendVerificationMail({ _id, name, email });
+      res.status(401);
+      return res.json({ message: "Email not verified" });
+    }
+
     const token = jwt.sign(
       {
         user: {
           _id,
           name,
           email,
-          verified,
         },
       },
       AuthConfig.secret,
@@ -67,26 +74,9 @@ AuthRoutes.post("/signup", async (req, res) => {
 
   if (newUser) {
     const { _id, name, email } = newUser;
-    const token = jwt.sign({ verifyUserId: _id }, AuthConfig.secret, {
-      expiresIn: AuthConfig.jwtExpiration,
-    });
     logger.info(`User ${email} signed up`);
 
-    // Send verification email
-    const mailOptions = {
-      from: "no-reply@cop4331.xhoantran.com",
-      to: email,
-      subject: "Account Verification",
-      text: VerificationEmail(email, token, name),
-    };
-
-    nodemailerTransporter.sendMail(mailOptions, (err, info) => {
-      if (err) {
-        logger.error(`Error sending verification email to ${email}: ${err}`);
-      } else {
-        logger.info(`Verification email sent to ${email}: ${info.response}`);
-      }
-    });
+    sendVerificationMail({ _id, name, email });
 
     return res.json({ message: "User created successfully" });
   }
