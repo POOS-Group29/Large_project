@@ -1,11 +1,11 @@
-const withMT = require("@material-tailwind/react/utils/withMT");
+import flowbite from "flowbite-react/tailwind";
 
 /* eslint-disable no-undef */
 /** @type {import('tailwindcss').Config} */
-export default withMT({
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+export default {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}", flowbite.content()],
   theme: {
     extend: {},
   },
-  plugins: [require("@tailwindcss/forms")],
-});
+  plugins: [require("@tailwindcss/forms"), flowbite.plugin()],
+};
