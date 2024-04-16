@@ -48,7 +48,7 @@ const locationSchema = new Schema<ILocation>(
       default: [],
     },
     image: {
-      type: String,
+      type: String || null,
       default: null,
     },
     maximumDepth: {
@@ -58,6 +58,7 @@ const locationSchema = new Schema<ILocation>(
       feet: {
         type: Number,
       },
+      type: Object || null,
       default: null,
     },
     location: {
