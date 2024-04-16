@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import clsx from "clsx";
+import { API } from "../../services";
 
 interface RatingProps {
   rate: number;
@@ -15,30 +16,47 @@ export const Rating = (props: RatingProps) => {
 
     // Call the API to submit the new rating
     try {
-      const response = await fetch(
-        "https://api.cop4331.xhoantran.com/api/difficulty",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId: props.userId,
-            locationId: props.locationId,
-            value: clickedRate,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Rating updated:", data);
+      await API.rating.difficulty
+        .create({
+          userId: props.userId,
+          locationId: props.locationId,
+          value: clickedRate,
+        })
+        .then((response) => {
+          if (response) {
+            console.log("Done");
+          } else {
+            throw new Error("Failed to rate");
+          }
+        });
     } catch (error) {
-      console.error("Failed to update rating:", error);
+      console.error("Error rating");
     }
+    // try {
+    //   const response = await fetch(
+    //     "https://api.cop4331.xhoantran.com/api/difficulty",
+    //     {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       body: JSON.stringify({
+    //         userId: props.userId,
+    //         locationId: props.locationId,
+    //         value: clickedRate,
+    //       }),
+    //     }
+    //   );
+
+    //   if (!response.ok) {
+    //     throw new Error(`HTTP error! status: ${response.status}`);
+    //   }
+
+    //   const data = await response.json();
+    //   console.log("Rating updated:", data);
+    // } catch (error) {
+    //   console.error("Failed to update rating:", error);
+    // }
   };
 
   return (
@@ -173,9 +191,6 @@ export const Rating = (props: RatingProps) => {
 // }
 
 // export default Rating
-
-
-
 
 // import React, { useState } from "react";
 // import clsx from "clsx";
