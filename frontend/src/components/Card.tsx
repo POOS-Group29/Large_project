@@ -9,12 +9,14 @@ export interface ICard {
   globeRef: React.MutableRefObject<GlobeMethods | undefined>;
   location: LocationSchemaType;
   onClick?: () => void;
+  onCardClick?: (pointId: string) => void; // Add onCardClick to the interface
 }
 
 export const Card = (props: ICard) => {
   const {
     globeRef,
     location: {
+      _id,
       images,
       name,
       difficultyRateCount,
@@ -28,12 +30,12 @@ export const Card = (props: ICard) => {
   } = props;
 
   const getGlobeLocation = (lng: number, lat: number) => {
-    // Function logic for getting globe location
+    // Function logic for getting globe location '#e0310d'
     console.log("Getting globe location...");
     globeRef.current?.pointOfView({
       lat: lat,
       lng: lng,
-      altitude: 0.5
+      altitude: 0.75
     }, 1000);
   };
 
@@ -46,6 +48,7 @@ export const Card = (props: ICard) => {
           onClick={() => {
             onClick && onClick(); // Call onClick function if provided
             getGlobeLocation(lng, lat); // Call getGlobeLocation function
+            props.onCardClick && props.onCardClick(_id); // Pass the ID of the selected point
           }}
         >
           <div className="flex flex-row">
