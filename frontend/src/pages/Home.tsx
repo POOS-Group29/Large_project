@@ -37,8 +37,8 @@ export default function Home() {
   const [pov, setPov] = useState({
     lat: 0,
     lng: 0,
-    altitude: 2.5
-  })
+    altitude: 2.5,
+  });
   const setPovDebounced = useDebounceCallback(setPov, 50);
   const globeRef = useRef();
 
@@ -73,6 +73,7 @@ export default function Home() {
                     <LocationDetail
                       id={selectedPoint._id}
                       onClickBack={() => setSelectedPoint(null)}
+                      globeRef={globeRef}
                     />
                   ) : (
                     <>
