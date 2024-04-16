@@ -44,8 +44,6 @@ export const LocationDetail = (props: LocationDetailProps) => {
           resetPointColor && resetPointColor(); // Call resetPointColor function if provided
           globeRef.current?.pointOfView(
             {
-              lat: 0,
-              lng: 0,
               altitude: 2.5,
             },
             1000
