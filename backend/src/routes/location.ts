@@ -56,10 +56,6 @@ LocationRoutes.get("/", async (req, res) => {
   }
 });
 
-// search locations api
-LocationRoutes.get('/search', async (req, res) => {
-  // TO DO
-});
 
 
 // Create a new location
