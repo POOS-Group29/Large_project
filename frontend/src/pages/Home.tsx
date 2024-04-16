@@ -34,8 +34,8 @@ export default function Home() {
   const [pov, setPov] = useState({
     lat: 0,
     lng: 0,
-    altitude: 2.5
-  })
+    altitude: 2.5,
+  });
   const setPovDebounced = useDebounceCallback(setPov, 50);
   const globeRef = useRef();
 
@@ -57,7 +57,7 @@ export default function Home() {
           {/* Removed transition mobile code */}
 
           {/* Static sidebar for desktop */}
-          <div className="hidden lg:absolute lg:inset-y-0 lg:z-50 lg:flex lg:w-96 lg:flex-col">
+          <div className="hidden lg:absolute lg:inset-y-0 lg:z-40 lg:flex lg:w-96 lg:flex-col">
             {/* Sidebar component, swap this element with another sidebar if you like */}
             <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 py-4">
               <div className="flex flex-1 flex-col">
