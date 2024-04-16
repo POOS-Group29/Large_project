@@ -41,9 +41,11 @@ const locationSchema = new Schema<ILocation>(
     },
     types: {
       type: [String],
+      default: [],
     },
     marineLife: {
       type: [String],
+      default: [],
     },
     image: {
       type: String,

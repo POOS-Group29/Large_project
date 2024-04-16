@@ -1,7 +1,8 @@
-import { readFileSync, write, writeFileSync } from "fs";
+import { readFileSync } from "fs";
 import z from "zod";
 
 import { MongooseSetUp } from "../config/MongoConfig";
+import logger from "../config/winston";
 import Location from "../model/Location";
 
 const ImageSchema = z.object({
@@ -74,13 +75,17 @@ const diveSitesTransformed = diveSites.map((site) => {
     },
     types: site.types,
     marineLife: site.marineLife,
-    image: site.images.length > 0 ? site.images[0].origin : undefined,
+    image: site.images.length > 0 ? site.images[0].origin : null,
     maximumDepth: site.maximumDepth
       ? {
           metters: site.maximumDepth.METERS.value,
           feet: site.maximumDepth.FEET.value,
         }
-      : undefined,
+      : null,
+    address: null,
+    city: null,
+    state: null,
+    country: null,
   });
 });
 
@@ -101,7 +106,7 @@ MongooseSetUp().then(async () => {
     try {
       await Location.insertMany(chunk);
     } catch (error) {
-      console.error(`Chunk index ${diveSitesChunks.indexOf(chunk)} failed`);
+      logger.error(`Chunk index ${diveSitesChunks.indexOf(chunk)} failed`);
     }
   }
 });
