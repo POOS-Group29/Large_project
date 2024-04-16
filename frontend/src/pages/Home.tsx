@@ -116,13 +116,13 @@ export default function Home() {
                   backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
                   onZoom={(newPov) => setPovDebounced(newPov)}
                   pointAltitude={(point) =>
+                    // @ts-expect-error _id is in LocationSchemaType
                     point._id === selectedPointId ? 0.3 : 0.1
                   }
-                  pointColor={(point) => {
-                    // Change color based on selectedPointId
-                    return point._id === selectedPointId ? 'red' : '#ffffaa';
-                  }}
-                  
+                  pointColor={(point) =>
+                    // @ts-expect-error _id is in LocationSchemaType
+                    point._id === selectedPointId ? "red" : "#ffffaa"
+                  }
                 />
               </div>
             </main>

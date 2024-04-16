@@ -3,9 +3,9 @@ import type { LocationSchemaType } from "@xhoantran/common";
 import { useEffect, useState } from "react";
 import { GlobeMethods } from "react-globe.gl";
 
-import ImageSlide from "./ImageSlide";
 import { API } from "../services";
 import { Badge } from "./Badge";
+import ImageSlide from "./ImageSlide";
 import { Rating } from "./Rating";
 
 interface LocationDetailProps {
