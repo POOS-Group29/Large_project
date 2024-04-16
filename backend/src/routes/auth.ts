@@ -61,6 +61,37 @@ AuthRoutes.post("/signup", async (req, res) => {
     return res.json({ message: "User already exists" });
   }
 
+  // Validate password
+  if (password.length < 8) {
+    logger.error(`User ${email} password is too short`);
+    res.status(400);
+    return res.json({ message: "Password must be at least 8 characters" });
+  }
+
+  if (!/[a-z]/.test(password)) {
+    logger.error(`User ${email} password does not contain lowercase letters`);
+    res.status(400);
+    return res.json({ message: "Password must contain lowercase letters" });
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    logger.error(`User ${email} password does not contain uppercase letters`);
+    res.status(400);
+    return res.json({ message: "Password must contain uppercase letters" });
+  }
+
+  if (!/[0-9]/.test(password)) {
+    logger.error(`User ${email} password does not contain numbers`);
+    res.status(400);
+    return res.json({ message: "Password must contain numbers" });
+  }
+
+  if (!/[!@#$%^&*]/.test(password)) {
+    logger.error(`User ${email} password does not contain special characters`);
+    res.status(400);
+    return res.json({ message: "Password must contain special characters" });
+  }
+
   // Create a new user
   const newUser = new User({ name, email, password });
   try {
