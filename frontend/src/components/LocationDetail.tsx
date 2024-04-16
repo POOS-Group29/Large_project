@@ -1,19 +1,23 @@
 import { ChevronLeftIcon } from "@heroicons/react/20/solid";
 import type { LocationSchemaType } from "@xhoantran/common";
 import { useEffect, useState } from "react";
+import { GlobeMethods } from "react-globe.gl";
 
-import ImageSlide from "./ImageSlide";
 import { API } from "../services";
 import { Badge } from "./Badge";
+import ImageSlide from "./ImageSlide";
 import { Rating } from "./Rating";
 
 interface LocationDetailProps {
   id: string;
   onClickBack: () => void;
+  globeRef: React.MutableRefObject<GlobeMethods | undefined>;
+  onCardClick?: (pointId: string) => void; // Add onCardClick to the interface
+  resetPointColor?: () => void; // Add resetPointColor to the interface
 }
 
 export const LocationDetail = (props: LocationDetailProps) => {
-  const { id, onClickBack } = props;
+  const { id, onClickBack, globeRef, resetPointColor } = props;
 
   const [location, setLocation] = useState<LocationSchemaType | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +39,18 @@ export const LocationDetail = (props: LocationDetailProps) => {
       {/* Back button */}
       <div
         className="flex flex-row gap-x-1 items-center mb-4"
-        onClick={onClickBack}
+        onClick={() => {
+          onClickBack && onClickBack(); // Call onClick function if provided
+          resetPointColor && resetPointColor(); // Call resetPointColor function if provided
+          globeRef.current?.pointOfView(
+            {
+              lat: 0,
+              lng: 0,
+              altitude: 2.5,
+            },
+            1000
+          ); // Call getGlobeLocation function
+        }}
       >
         <ChevronLeftIcon className="h-5 w-5 text-white" />
         <button className="text-white">Back</button>

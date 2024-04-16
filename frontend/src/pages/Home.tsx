@@ -12,6 +12,7 @@ import type { LocationSchemaType } from "@xhoantran/common";
 interface IPoint extends LocationSchemaType {
   lat: number;
   lng: number;
+  _id: string; // Define _id property
 }
 
 const transformLocation = (location: LocationSchemaType): IPoint => {
@@ -31,11 +32,13 @@ export default function Home() {
   const [selectedPoint, setSelectedPoint] = useState<LocationSchemaType | null>(
     null
   );
+  const [selectedPointId, setSelectedPointId] = useState<string | null>(null);
+
   const [pov, setPov] = useState({
     lat: 0,
     lng: 0,
-    altitude: 2.5
-  })
+    altitude: 2.5,
+  });
   const setPovDebounced = useDebounceCallback(setPov, 50);
   const globeRef = useRef();
 
@@ -49,6 +52,10 @@ export default function Home() {
         setPointsData(data.map((location) => transformLocation(location)))
       );
   }, [pov]);
+
+  const handleCardClick = (pointId: string) => {
+    setSelectedPointId(pointId);
+  };
 
   return (
     <>
@@ -66,6 +73,8 @@ export default function Home() {
                     <LocationDetail
                       id={selectedPoint._id}
                       onClickBack={() => setSelectedPoint(null)}
+                      globeRef={globeRef}
+                      resetPointColor={() => setSelectedPointId(null)} // Pass the resetPointColor function
                     />
                   ) : (
                     <>
@@ -73,6 +82,7 @@ export default function Home() {
                         <Card
                           globeRef={globeRef}
                           onClick={() => setSelectedPoint(point)}
+                          onCardClick={handleCardClick} // Pass onCardClick callback
                           key={index}
                           location={point}
                         />
@@ -105,6 +115,14 @@ export default function Home() {
                   globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
                   backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
                   onZoom={(newPov) => setPovDebounced(newPov)}
+                  pointAltitude={(point) =>
+                    // @ts-expect-error _id is in LocationSchemaType
+                    point._id === selectedPointId ? 0.3 : 0.1
+                  }
+                  pointColor={(point) =>
+                    // @ts-expect-error _id is in LocationSchemaType
+                    point._id === selectedPointId ? "red" : "#ffffaa"
+                  }
                 />
               </div>
             </main>
