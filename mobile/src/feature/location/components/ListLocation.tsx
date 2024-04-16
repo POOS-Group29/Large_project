@@ -12,6 +12,10 @@ import { CreateLocation } from './CreateLocation';
 import { ScrollView } from 'react-native-gesture-handler';
 import { generateBorderColors, staticBorderStyles } from '@/theme/borders';
 import { Rating } from '@kolking/react-native-rating';
+import { Button } from '@/components/Button';
+import { useNavigation } from '@react-navigation/native';
+
+
 
 interface ListLocationProps {
 	locations: LocationSchemaType[];
@@ -68,12 +72,9 @@ const styles = StyleSheet.create({
 	
 });
 
-
-
 export function ListLocation(props: ListLocationProps) {
 	const { borders, gutters } = useTheme();
 	const { locations } = props;
-
 	const [selectedLocation, setSelectedLocation] =
 		useState<LocationSchemaType | null>(null);
 	
@@ -81,35 +82,23 @@ export function ListLocation(props: ListLocationProps) {
 		return count === 0 ? 0 : sum/count;
 	
 	}
+	const navigation = useNavigation();
 	return (
 		<View style={[styles.container]}>
 			{/* Slide bar */}
 			{/* <View style={styles.slideBar} /> */}
 
 			<CreateLocation/>
-			
-			{selectedLocation ? (
-				<View>
-					<TouchableOpacity onPress={() => setSelectedLocation(null)}>
-						<Text>Back</Text>
-					</TouchableOpacity>
 
-					<View style={[gutters.marginVertical_16, borders.gray900]}>
-						<Text>{selectedLocation.name}</Text>
-						<Text>{selectedLocation.address}</Text>
-					</View>
-				</View>
-			) : (
-				
-				<ScrollView style={styles.scrollView}>
+			<ScrollView style={styles.scrollView}>
 					
-					{ locations.map((location, locationId) => (
+					{ locations.map((location, index) => (
 						<View
 							// style={[gutters.marginVertical_16, borders.gray900, styles.slideView]}
 							style={styles.slideView}
-							key={locationId}
+							key={index}
 						>
-							<Pressable onPress={() => setSelectedLocation(location)}>
+							<Pressable onPress={() => navigation.navigate('RetrieveLocation', {locationId: location._id})}>
 								<View>
 									<Text style={styles.text}>{location.name}</Text>
 									<Text style={styles.subText}>{location.address}</Text>
@@ -124,8 +113,6 @@ export function ListLocation(props: ListLocationProps) {
 						</View>
 					))}
 				</ScrollView>
-			)
-			}
 			
 		</View>
 	);

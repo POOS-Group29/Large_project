@@ -20,57 +20,62 @@ const isZipValid = (zip) => /^\d{5}$/.test(zip);
 const isLatValid = (lat) => !isNaN(lat) && lat >= -90 && lat <= 90;
 const isLongValid = (long) => !isNaN(long) && long >= -180 && long <= 180;
 const isStateValid = (state) => /^[A-Z]{2}$/.test(state);
-//const doCreateLocation = useCreateLocation();
-const validateInputs = () => {
-if (!name.trim()) {
-	Alert.alert('Validation Error', 'Please enter your name.');
-	return false;
-}
-if (!address.trim()) {
-	Alert.alert('Validation Error', 'Please enter your address.');
-	return false;
-}
-if (!city.trim()) {
-	Alert.alert('Validation Error', 'Please enter your city.');
-	return false;
-}
-if (!isStateValid(state)) {
-	Alert.alert('Validation Error', 'Please enter a valid 2-letter state code.');
-	return false;
-}
-if (!isZipValid(zip)) {
-	Alert.alert('Validation Error', 'Please enter a valid 5-digit zip code.');
-	return false;
-}
-if (!isLatValid(parseFloat(latitude))) {
-	Alert.alert('Validation Error', 'Please enter a valid latitude (-90 to 90).');
-	return false;
-}
-if (!isLongValid(parseFloat(longitude))) {
-	Alert.alert('Validation Error', 'Please enter a valid longitude (-180 to 180).');
-	return false;
-}
-return true;
-};
 
-const handleSubmit = () => {
-if (validateInputs()) {
-	const createData = {
-		name: "Example 1",
-		address: "address",
-		city: "city",
-		state: "state",
-		zip: 12345,
-		lat: 20,
-		long: 30
-	};
-	try {
-		createLocation.mutate(createData);
-		navigation.navigate('Main');
-	}	catch (error) {
-		console.error('Error creating location:', error);
+const validateInputs = () => {
+	if (!name.trim()) {
+		Alert.alert('Validation Error', 'Please enter your name.');
+		return false;
 	}
-}
+	if (!address.trim()) {
+		Alert.alert('Validation Error', 'Please enter your address.');
+		return false;
+	}
+	if (!city.trim()) {
+		Alert.alert('Validation Error', 'Please enter your city.');
+		return false;
+	}
+	if (!isStateValid(state)) {
+		Alert.alert('Validation Error', 'Please enter a valid 2-letter state code.');
+		return false;
+	}
+	if (!isZipValid(zip)) {
+		Alert.alert('Validation Error', 'Please enter a valid 5-digit zip code.');
+		return false;
+	}
+	if (!isLatValid(parseFloat(latitude))) {
+		Alert.alert('Validation Error', 'Please enter a valid latitude (-90 to 90).');
+		return false;
+	}
+	if (!isLongValid(parseFloat(longitude))) {
+		Alert.alert('Validation Error', 'Please enter a valid longitude (-180 to 180).');
+		return false;
+	}
+	return true;
+	};
+
+	const handleSubmit =  () => {
+	if (validateInputs()) {
+		const createData = {
+			name: name,
+			address: address,
+			city: city,
+			state: state,
+			zip: zip,
+			lat: latitude,
+			long: longitude
+		};
+
+		createLocation.mutate(createData, {
+			onSuccess: () => {
+				Alert.alert('Location created successfully!');
+				navigation.navigate('Main');
+			},
+			onError: (error) => {
+				console.log(error)
+				Alert.alert('Failed to create location: ' + error.message)
+			},
+		});
+	}
 };
 
 const createLocation = useCreateLocation();
