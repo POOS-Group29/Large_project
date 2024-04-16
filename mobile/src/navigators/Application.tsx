@@ -6,6 +6,8 @@ import { useTheme } from '@/theme';
 
 import { useAuthStorage } from '@/store/auth';
 import type { ApplicationStackParamList } from '@/types/navigation';
+import CreateLocation from '@/screens/CreateLocation/CreateLocation';
+import RetrieveLocation from '@/screens/RetrieveLocation/RetrieveLocation';
 
 const Stack = createStackNavigator<ApplicationStackParamList>();
 
@@ -17,7 +19,19 @@ function ApplicationNavigator() {
 		<NavigationContainer theme={navigationTheme}>
 			<Stack.Navigator key={variant} screenOptions={{ headerShown: false }}>
 				{isAuthorized ? (
-					<Stack.Screen name="Main" component={Main} />
+					<>
+						<Stack.Screen name="Main" component={Main} />
+						<Stack.Screen
+							name="CreateLocation"
+							component={CreateLocation}
+							options={{ headerShown: true, title: 'Create Location' }}
+						/>
+						<Stack.Screen
+							name="RetrieveLocation"
+							component={RetrieveLocation}
+							options={{ headerShown: true, title: 'Retrieve Location' }}
+						/>
+					</>
 				) : (
 					<>
 						<Stack.Screen name="AuthScreen" component={AuthScreen} />
