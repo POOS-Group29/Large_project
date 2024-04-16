@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Globe from "react-globe.gl";
+import Globe, { GlobeMethods } from "react-globe.gl";
 import { useDebounceCallback } from "usehooks-ts";
 import { Card } from "../components/Card";
 import { LocationDetail } from "../components/LocationDetail";
@@ -37,7 +37,7 @@ export default function Home() {
     altitude: 2.5,
   });
   const setPovDebounced = useDebounceCallback(setPov, 50);
-  const globeRef = useRef();
+  const globeRef = useRef<GlobeMethods | undefined>();
 
   useEffect(() => {
     API.location
@@ -52,7 +52,7 @@ export default function Home() {
 
   return (
     <>
-      <Dashboard>
+      <Dashboard onSelectedLocation={(location) => setSelectedPoint(location)}>
         <div className="relative h-full w-full overflow-hidden">
           {/* Removed transition mobile code */}
 

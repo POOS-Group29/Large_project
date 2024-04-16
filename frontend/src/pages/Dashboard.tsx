@@ -151,6 +151,7 @@ export default function Dashboard(props: DashboardProps) {
                                     onClick={() => {
                                       if (props.onSelectedLocation) {
                                         props.onSelectedLocation(location);
+                                        setSearchOpen(false);
                                       }
                                     }}
                                   >
