@@ -6,6 +6,24 @@ import { DifficultyRating } from "../model/Rating";
 
 export const LocationRoutes = express.Router();
 
+// Search for locations by name
+LocationRoutes.get("/search", async (req, res) => {
+  const { name } = req.query;
+  if (!name) {
+    logger.error("Name is required");
+    return res.status(400).json({ message: "Name is required" });
+  }
+  try {
+    const locations = await Location.find({
+      name: { $regex: new RegExp(name as string, "i") },
+    });
+    return res.json(locations);
+  } catch (error) {
+    logger.error(error);
+    return res.status(500).json({ message: "Error fetching locations" });
+  }
+});
+
 // List all locations near a given latitude and longitude
 LocationRoutes.get("/", async (req, res) => {
   const { lat, long, page } = req.query;
@@ -30,7 +48,7 @@ LocationRoutes.get("/", async (req, res) => {
       },
     })
       .skip((parseInt(page as string) - 1) * 10)
-      .limit(25);
+      .limit(100);
     return res.json(locations);
   } catch (error) {
     logger.error(error);

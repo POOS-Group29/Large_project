@@ -10,7 +10,13 @@ interface ILocation extends Document {
     type: string;
     coordinates: number[];
   };
-
+  types: string[];
+  marineLife: string[];
+  image: string | null;
+  maximumDepth: {
+    metters: number;
+    feet: number;
+  } | null;
   difficultyRateCount: number;
   difficultyRateValue: number;
 }
@@ -32,6 +38,28 @@ const locationSchema = new Schema<ILocation>(
     },
     zip: {
       type: String,
+    },
+    types: {
+      type: [String],
+      default: [],
+    },
+    marineLife: {
+      type: [String],
+      default: [],
+    },
+    image: {
+      type: String || null,
+      default: null,
+    },
+    maximumDepth: {
+      metters: {
+        type: Number,
+      },
+      feet: {
+        type: Number,
+      },
+      type: Object || null,
+      default: null,
     },
     location: {
       type: {

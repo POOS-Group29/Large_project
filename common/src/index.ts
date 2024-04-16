@@ -42,4 +42,4 @@ export default (props: ICommonAPI) => {
   };
 };
 
-
+export type { LocationSchemaType } from "./schemas/location";
