@@ -16,7 +16,7 @@ AuthRoutes.post("/signin", async (req, res) => {
   const user = await User.findOne({ email });
 
   if (user && (await user.matchPasswords(password))) {
-    const { _id, name, email } = user;
+    const { _id, name, email, verified } = user;
     logger.info(`User ${email} signed in`);
     const token = jwt.sign(
       {
@@ -24,6 +24,7 @@ AuthRoutes.post("/signin", async (req, res) => {
           _id,
           name,
           email,
+          verified,
         },
       },
       AuthConfig.secret,
@@ -87,7 +88,7 @@ AuthRoutes.post("/signup", async (req, res) => {
       }
     });
 
-    return res.json({ token, user: { _id, name, email } });
+    return res.json({ message: "User created successfully" });
   }
 
   logger.error(`Error to sign up user ${email}`);
