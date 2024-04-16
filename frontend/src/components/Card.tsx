@@ -58,7 +58,7 @@ export const Card = (props: ICard) => {
         {/* Types */}
         <div className="mt-2 flex flex-row gap-x-1">
           {types.map((type) => (
-            <Badge text={type} />
+            <Badge key={type} text={type} />
           ))}
         </div>
 
