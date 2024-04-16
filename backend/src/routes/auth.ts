@@ -16,11 +16,22 @@ AuthRoutes.post("/signin", async (req, res) => {
   const user = await User.findOne({ email });
 
   if (user && (await user.matchPasswords(password))) {
-    const { _id, name, email } = user;
+    const { _id, name, email, verified } = user;
     logger.info(`User ${email} signed in`);
-    const token = jwt.sign({ _id }, AuthConfig.secret, {
-      expiresIn: AuthConfig.jwtExpiration,
-    });
+    const token = jwt.sign(
+      {
+        user: {
+          _id,
+          name,
+          email,
+          verified,
+        },
+      },
+      AuthConfig.secret,
+      {
+        expiresIn: AuthConfig.jwtExpiration,
+      }
+    );
     res.json({ token, user: { _id, name, email } });
     return;
   }
@@ -56,20 +67,17 @@ AuthRoutes.post("/signup", async (req, res) => {
 
   if (newUser) {
     const { _id, name, email } = newUser;
-    const token = jwt.sign({ _id }, AuthConfig.secret, {
+    const token = jwt.sign({ verifyUserId: _id }, AuthConfig.secret, {
       expiresIn: AuthConfig.jwtExpiration,
     });
     logger.info(`User ${email} signed up`);
-
-    // Generate verification email using the template
-    const verificationEmail = VerificationEmail(email, token, name);
 
     // Send verification email
     const mailOptions = {
       from: "no-reply@cop4331.xhoantran.com",
       to: email,
       subject: "Account Verification",
-      text: verificationEmail,
+      text: VerificationEmail(email, token, name),
     };
 
     nodemailerTransporter.sendMail(mailOptions, (err, info) => {
@@ -80,12 +88,38 @@ AuthRoutes.post("/signup", async (req, res) => {
       }
     });
 
-    return res.json({ token, user: { _id, name, email } });
+    return res.json({ message: "User created successfully" });
   }
 
   logger.error(`Error to sign up user ${email}`);
   res.status(400);
   return res.json({ message: "Invalid user data" });
+});
+
+AuthRoutes.post("/verify-email", async (req, res) => {
+  const { token, email } = req.body;
+
+  try {
+    const decoded = jwt.verify(token as string, AuthConfig.secret) as {
+      verifyUserId?: string;
+    };
+
+    if (decoded.verifyUserId) {
+      const user = await User.findById(decoded.verifyUserId);
+      logger.info(`User ${email} is trying to verify email`);
+
+      if (user && user.email === email) {
+        user.verified = true;
+        await user.save();
+        return res.json({ message: "Email verified" });
+      }
+    }
+  } catch (error) {
+    logger.error(`Error to verify email: ${error}`);
+    return res.json({ message: "Invalid token" });
+  }
+
+  return res.json({ message: "Invalid token" });
 });
 
 AuthRoutes.get("/profile", authMiddleware, async (req, res) => {

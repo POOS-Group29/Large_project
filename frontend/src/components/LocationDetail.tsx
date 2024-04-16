@@ -1,22 +1,9 @@
 import { ChevronLeftIcon } from "@heroicons/react/20/solid";
+import type { LocationSchemaType } from "@xhoantran/common";
 import { useEffect, useState } from "react";
+
 import { API } from "../services";
 import { Rating } from "./Rating";
-
-interface LocationDetail {
-  name: string;
-  location: {
-    coordinates: number[];
-  };
-  address: string;
-  city: string;
-  state: string;
-  zip: string;
-  createdAt: string;
-  updatedAt: string;
-  difficultyRateCount: number;
-  difficultyRateValue: number;
-}
 
 interface LocationDetailProps {
   id: string;
@@ -26,7 +13,7 @@ interface LocationDetailProps {
 export const LocationDetail = (props: LocationDetailProps) => {
   const { id, onClickBack } = props;
 
-  const [location, setLocation] = useState<LocationDetail | null>(null);
+  const [location, setLocation] = useState<LocationSchemaType | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -47,11 +34,12 @@ export const LocationDetail = (props: LocationDetailProps) => {
   return (
     <>
       {/* Back button */}
-      <div className="flex flex-row gap-x-1 items-center mb-4">
+      <div
+        className="flex flex-row gap-x-1 items-center mb-4"
+        onClick={onClickBack}
+      >
         <ChevronLeftIcon className="h-5 w-5 text-white" />
-        <button onClick={onClickBack} className="text-white">
-          Back
-        </button>
+        <button className="text-white">Back</button>
       </div>
 
       {location ? (

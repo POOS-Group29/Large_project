@@ -1,27 +1,36 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from "react";
 import Globe from "react-globe.gl";
 import { useDebounceCallback } from "usehooks-ts";
-import { Card, ICard } from "../components/Card";
+import { Card } from "../components/Card";
 import { LocationDetail } from "../components/LocationDetail";
 import { Pagination } from "../components/Pagination";
 import { API } from "../services";
 import Dashboard from "./Dashboard";
 
-const transformLocationData = (data: any) => {
-  return data.map((location: any) => {
-    return {
-      ...location,
-      lat: location.location.coordinates[1],
-      lng: location.location.coordinates[0],
-      rate: location.difficultyRateValue / location.difficultyRateCount,
-    };
-  });
+import type { LocationSchemaType } from "@xhoantran/common";
+
+interface IPoint extends LocationSchemaType {
+  lat: number;
+  lng: number;
+}
+
+const transformLocation = (location: LocationSchemaType): IPoint => {
+  const {
+    location: { coordinates },
+  } = location;
+
+  return {
+    ...location,
+    lat: coordinates[1],
+    lng: coordinates[0],
+  };
 };
 
 export default function Home() {
-  const [pointsData, setPointsData] = useState<ICard[]>([]);
-  const [selectedPoint, setSelectedPoint] = useState<ICard | null>(null);
+  const [pointsData, setPointsData] = useState<LocationSchemaType[]>([]);
+  const [selectedPoint, setSelectedPoint] = useState<LocationSchemaType | null>(
+    null
+  );
   const [pov, setPov] = useState({
     lat: 0,
     lng: 0,
@@ -36,13 +45,10 @@ export default function Home() {
         long: pov.lng,
         lat: pov.lat,
       })
-      .then((data: any) => {
-        console.log(data);
-        setPointsData(transformLocationData(data));
-      });
+      .then((data) =>
+        setPointsData(data.map((location) => transformLocation(location)))
+      );
   }, [pov]);
-
-  console.log("Home.tsx");
 
   return (
     <>
@@ -58,7 +64,6 @@ export default function Home() {
                 <ul role="list" className="flex flex-1 flex-col gap-y-7">
                   {selectedPoint ? (
                     <LocationDetail
-                      // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'point' implicitly has an 'any' type.
                       id={selectedPoint._id}
                       onClickBack={() => setSelectedPoint(null)}
                     />
@@ -68,10 +73,7 @@ export default function Home() {
                         <Card
                           onClick={() => setSelectedPoint(point)}
                           key={index}
-                          rate={point.rate}
-                          name={point.name}
-                          lat={point.lat}
-                          lng={point.lng}
+                          location={point}
                         />
                       ))}
                       <Pagination />
@@ -96,7 +98,9 @@ export default function Home() {
                 <Globe
                   ref={globeRef}
                   pointsData={pointsData}
-                  onPointClick={(point) => setSelectedPoint(point as any)}
+                  onPointClick={(point) =>
+                    setSelectedPoint(point as LocationSchemaType)
+                  }
                   globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
                   backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
                   onZoom={(newPov) => setPovDebounced(newPov)}

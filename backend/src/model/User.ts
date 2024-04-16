@@ -5,6 +5,7 @@ interface IUser extends Document {
   name: string;
   email: string;
   password: string;
+  verified: boolean;
   matchPasswords: (password: string) => Promise<boolean>;
 }
 
@@ -22,6 +23,10 @@ const userSchema = new Schema<IUser>(
     password: {
       type: String,
       required: [true, "Please provide a password"],
+    },
+    verified: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
