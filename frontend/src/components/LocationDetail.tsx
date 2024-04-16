@@ -12,10 +12,12 @@ interface LocationDetailProps {
   id: string;
   onClickBack: () => void;
   globeRef: React.MutableRefObject<GlobeMethods | undefined>;
+  onCardClick?: (pointId: string) => void; // Add onCardClick to the interface
+  resetPointColor?: () => void; // Add resetPointColor to the interface
 }
 
 export const LocationDetail = (props: LocationDetailProps) => {
-  const { id, onClickBack, globeRef } = props;
+  const { id, onClickBack, globeRef, resetPointColor } = props;
 
   const [location, setLocation] = useState<LocationSchemaType | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -39,6 +41,7 @@ export const LocationDetail = (props: LocationDetailProps) => {
         className="flex flex-row gap-x-1 items-center mb-4"
         onClick={() => {
           onClickBack && onClickBack(); // Call onClick function if provided
+          resetPointColor && resetPointColor(); // Call resetPointColor function if provided
           globeRef.current?.pointOfView(
             {
               lat: 0,

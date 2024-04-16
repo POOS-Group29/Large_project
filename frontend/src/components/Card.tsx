@@ -33,8 +33,8 @@ export const Card = (props: ICard) => {
     // Function logic for getting globe location '#e0310d'
     console.log("Getting globe location...");
     globeRef.current?.pointOfView({
-      lat: lat,
-      lng: lng,
+      lat: (lat - 2 + 90) % 180 - 90, //(lat + 2 + 90 ) mod 360 - 270
+      lng: (lng + 8 + 180) % 360 - 180,
       altitude: 0.75
     }, 1000);
   };

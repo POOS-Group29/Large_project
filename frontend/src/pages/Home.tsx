@@ -74,6 +74,7 @@ export default function Home() {
                       id={selectedPoint._id}
                       onClickBack={() => setSelectedPoint(null)}
                       globeRef={globeRef}
+                      resetPointColor={() => setSelectedPointId(null)} // Pass the resetPointColor function
                     />
                   ) : (
                     <>
@@ -114,10 +115,14 @@ export default function Home() {
                   globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
                   backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
                   onZoom={(newPov) => setPovDebounced(newPov)}
+                  pointAltitude={(point) =>
+                    point._id === selectedPointId ? 0.3 : 0.1
+                  }
                   pointColor={(point) => {
                     // Change color based on selectedPointId
                     return point._id === selectedPointId ? 'red' : '#ffffaa';
                   }}
+                  
                 />
               </div>
             </main>
