@@ -1,10 +1,8 @@
 import { ChevronLeftIcon } from "@heroicons/react/20/solid";
 import type { LocationSchemaType } from "@xhoantran/common";
 import { useEffect, useState } from "react";
-import { Carousel } from "@material-tailwind/react";
+
 import ImageSlide from "./ImageSlide";
-
-
 import { API } from "../services";
 import { Badge } from "./Badge";
 import { Rating } from "./Rating";
@@ -32,9 +30,6 @@ export const LocationDetail = (props: LocationDetailProps) => {
     }
   }, [rating, id]);
 
-
-  
-
   return (
     <>
       {/* Back button */}
@@ -47,7 +42,7 @@ export const LocationDetail = (props: LocationDetailProps) => {
       </div>
 
       {/* Image */}
-      {location?.images && <ImageSlide images={location?.images} />} 
+      {location?.images && <ImageSlide images={location?.images} />}
 
       {location ? (
         <div className="flex flex-col gap-y-2 text-white">
@@ -80,7 +75,9 @@ export const LocationDetail = (props: LocationDetailProps) => {
           </p>
           <p>
             Maximal depth:{" "}
-            {location.maximumDepth ? location.maximumDepth.metters + "m" : "Not available"}
+            {location.maximumDepth
+              ? location.maximumDepth.metters + "m"
+              : "Not available"}
           </p>
           <p>
             Coords: {location.location.coordinates[0].toFixed(6)},{" "}
