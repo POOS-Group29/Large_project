@@ -33,7 +33,8 @@ export const Card = (props: ICard) => {
     globeRef.current?.pointOfView({
       lat: lat,
       lng: lng,
-    });
+      altitude: 0.5
+    }, 1000);
   };
 
   return (
