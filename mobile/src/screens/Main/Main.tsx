@@ -1,20 +1,17 @@
 import { useListLocation } from '@/feature/location/api/list';
-import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
-import { View, Text, StyleSheet, Button, Pressable } from 'react-native';
+import BottomSheet from '@gorhom/bottom-sheet';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Region } from 'react-native-maps';
 import MapView, { Marker } from 'react-native-maps';
 import { useDebounceCallback } from 'usehooks-ts';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 
-
-import { CreateLocation } from '@/feature/location/components/CreateLocation';
 import { ListLocation } from '@/feature/location/components/ListLocation';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useAuthStorage } from '@/store/auth';
 // import { useLocationStorage } from '@/store/location';
 
 export default function Main() {
-  // const { selectedLocation} = useLocationStorage();
+	// const { selectedLocation} = useLocationStorage();
 
 	const [currentRegion, setCurrentRegion] = useState<Region>({
 		latitude: 0,
@@ -28,15 +25,13 @@ export default function Main() {
 		lat: currentRegion.latitude,
 		long: currentRegion.longitude,
 	});
-	
+
 	const { setUser, setIsAuthorized, setToken } = useAuthStorage();
 
 	useEffect(() => {
 		void listLocation.refetch();
 	}, [currentRegion]);
 
-	console.log("listLocation", listLocation.data);
-	
 	const styles = StyleSheet.create({
 		container: {
 			flex: 1,
@@ -52,17 +47,16 @@ export default function Main() {
 			paddingVertical: 8,
 			paddingHorizontal: 12,
 			backgroundColor: 'grey',
-			position: 'absolute', 
-			top:20, 
-			right:0, 
-			padding: 10, 
+			position: 'absolute',
+			top: 20,
+			right: 0,
+			padding: 10,
 			borderRadius: 20,
 		},
 		logoutButtonText: {
 			color: 'white',
 			fontSize: 16,
 		},
-		
 	});
 
 	const bottomSheetRef = useRef<BottomSheet>(null);
@@ -72,13 +66,13 @@ export default function Main() {
 	const handleSheetChanges = useCallback((index: number) => {
 		console.log('handleSheetChanges', index);
 	}, []);
-	const logout = ()=>{
+	const logout = () => {
 		setToken('');
 		setUser(null);
 		setIsAuthorized(false);
-	}
+	};
 	return (
-		<View >
+		<View>
 			<MapView
 				style={{ width: '100%', height: '100%' }}
 				onRegionChange={region => debouncedSetCurrentRegion(region)}
@@ -103,11 +97,8 @@ export default function Main() {
 				snapPoints={snapPoints}
 			>
 				<ListLocation locations={listLocation.data ?? []} />
-
-			</BottomSheet> 
-			<Pressable style={styles.logoutButton}
-				onPress={logout}
-			>
+			</BottomSheet>
+			<Pressable style={styles.logoutButton} onPress={logout}>
 				<Text style={styles.logoutButtonText}>Logout</Text>
 			</Pressable>
 		</View>

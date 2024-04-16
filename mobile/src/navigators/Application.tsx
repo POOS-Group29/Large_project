@@ -21,8 +21,16 @@ function ApplicationNavigator() {
 				{isAuthorized ? (
 					<>
 						<Stack.Screen name="Main" component={Main} />
-						<Stack.Screen name="CreateLocation" component={CreateLocation} options={{headerShown : true, title : "Create Location"}}/>
-						<Stack.Screen name="RetrieveLocation" component={RetrieveLocation} options={{headerShown : true, title : "Retrieve Location"}}/>
+						<Stack.Screen
+							name="CreateLocation"
+							component={CreateLocation}
+							options={{ headerShown: true, title: 'Create Location' }}
+						/>
+						<Stack.Screen
+							name="RetrieveLocation"
+							component={RetrieveLocation}
+							options={{ headerShown: true, title: 'Retrieve Location' }}
+						/>
 					</>
 				) : (
 					<>

@@ -28,8 +28,6 @@ function SignIn({ navigation }: ApplicationScreenProps) {
 	const onSubmit: SubmitHandler<SignInRequestSchemaType> = async data => {
 		try {
 			const res = await API.auth.signIn(data);
-			console.log(res.token);
-			console.log(res.user)
 			setToken(res.token);
 			setUser(res.user);
 			setIsAuthorized(true);
