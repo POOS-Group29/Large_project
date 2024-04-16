@@ -1,20 +1,27 @@
-import {
-  CheckCircleIcon,
-  ExclamationCircleIcon,
-} from "@heroicons/react/20/solid";
+import { CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { HTTPError } from "ky";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import z from "zod";
+import { Button } from "../components/Button";
+import { PasswordRequirements } from "../components/PasswordRequirements";
 import { ROUTES } from "../config/routes";
 import { API } from "../services";
-import { Button } from "../components/Button";
-import { HTTPError } from "ky";
 
 const RegisterSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8),
+  password: z
+    .string()
+    .min(8)
+    .refine((password) => {
+      return [
+        /[A-Z]/.test(password),
+        /[0-9]/.test(password),
+        /[!@#$%^&*]/.test(password),
+      ].every(Boolean);
+    }),
   name: z.string().min(3),
 });
 
@@ -35,8 +42,11 @@ export default function Register() {
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting },
+    watch,
+    formState: { isSubmitting, dirtyFields },
   } = methods;
+
+  const password = watch("password");
 
   const onSubmit = handleSubmit(async (values) => {
     try {
@@ -172,6 +182,11 @@ export default function Register() {
                         autoComplete="current-password"
                         required
                         className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                      />
+
+                      <PasswordRequirements
+                        password={password}
+                        isDirty={dirtyFields.password}
                       />
                     </div>
                   </div>
