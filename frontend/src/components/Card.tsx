@@ -1,5 +1,6 @@
 import { NoSymbolIcon } from "@heroicons/react/20/solid";
 import { LocationSchemaType } from "@xhoantran/common";
+import { Badge } from "./Badge";
 import { Rating } from "./Rating";
 
 export interface ICard {
@@ -14,6 +15,7 @@ export const Card = (props: ICard) => {
       name,
       difficultyRateCount,
       difficultyRateValue,
+      types,
       location: {
         coordinates: [lng, lat],
       },
@@ -53,11 +55,19 @@ export const Card = (props: ICard) => {
         {/* Rating */}
         <Rating rate={difficultyRateValue / difficultyRateCount} />
 
-        <div className="flex flex-row">
-          <div className="text-sm">Longitude: {lng}</div>
+        {/* Types */}
+        <div className="mt-2 flex flex-row gap-x-1">
+          {types.map((type) => (
+            <Badge text={type} />
+          ))}
         </div>
+
+        {/* Coordinates */}
         <div className="flex flex-row">
-          <div className="text-sm">Latitude: {lat}</div>
+          <span className="text-sm text-gray-900">Coordinates: </span>
+          <span className="text-sm text-gray-900">
+            {lat.toFixed(2)}, {lng.toFixed(2)}
+          </span>
         </div>
       </div>
     </>

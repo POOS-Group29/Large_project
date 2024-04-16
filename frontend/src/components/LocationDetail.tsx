@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { API } from "../services";
 import { Rating } from "./Rating";
+import { Badge } from "./Badge";
 
 interface LocationDetailProps {
   id: string;
@@ -51,12 +52,25 @@ export const LocationDetail = (props: LocationDetailProps) => {
             rate={location.difficultyRateValue / location.difficultyRateCount}
           />
 
-          <p>
-            {location.city}, {location.state} {location.zip}
-          </p>
+          {location.city && location.state && location.zip && (
+            <p>
+              {location.city}, {location.state} {location.zip}
+            </p>
+          )}
+
+          {/* Types */}
+          <div className="my-2 flex flex-row gap-x-1">
+            {location.types.map((type) => (
+              <Badge text={type} dark />
+            ))}
+          </div>
+
           <p>Coordinates: {location.location.coordinates.join(", ")}</p>
           <p>Created: {location.createdAt}</p>
           <p>Updated: {location.updatedAt}</p>
+
+          {/* User rating */}
+
         </div>
       ) : (
         <div>
