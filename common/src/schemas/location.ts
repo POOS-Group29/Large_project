@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { RatingSchema } from "./rating";
 
 export const LocationMutationSchema = z.object({
   name: z.string(),
@@ -26,12 +27,14 @@ export const LocationSchema = z.object({
   types: z.array(z.string()),
   marineLife: z.array(z.string()),
   image: z.string().nullish(),
+  images: z.array(z.string()),
   maximumDepth: z
     .object({
       metters: z.number(),
       feet: z.number(),
     })
     .nullish(),
+  userRating: RatingSchema.nullish(),
   difficultyRateCount: z.number(),
   difficultyRateValue: z.number(),
   createdAt: z.string(),

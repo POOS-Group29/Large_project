@@ -76,6 +76,7 @@ const diveSitesTransformed = diveSites.map((site) => {
     types: site.types,
     marineLife: site.marineLife,
     image: site.images.length > 0 ? site.images[0].origin : null,
+    images: site.images.map((image) => image["origin"]),
     maximumDepth: site.maximumDepth
       ? {
           metters: site.maximumDepth.METERS.value,

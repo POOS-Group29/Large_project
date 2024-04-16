@@ -16,16 +16,10 @@ export const authMiddleware = async (req: any, res: any, next: any) => {
         _id: string;
         name: string;
         email: string;
-        verified: boolean;
       };
     };
     req.user = decoded.user;
     logger.info(`User ${req.user._id} authenticated`);
-
-    if (!req.user.verified) {
-      res.status(401);
-      return res.json({ message: "Email not verified" });
-    }
 
     next();
   } catch (error) {

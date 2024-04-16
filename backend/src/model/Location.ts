@@ -13,6 +13,7 @@ interface ILocation extends Document {
   types: string[];
   marineLife: string[];
   image: string | null;
+  images: string[];
   maximumDepth: {
     metters: number;
     feet: number;
@@ -50,6 +51,10 @@ const locationSchema = new Schema<ILocation>(
     image: {
       type: String || null,
       default: null,
+    },
+    images: {
+      type: [String],
+      default: [],
     },
     maximumDepth: {
       metters: {
