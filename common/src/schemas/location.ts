@@ -2,10 +2,10 @@ import { z } from "zod";
 
 export const LocationMutationSchema = z.object({
   name: z.string(),
-  address: z.string().optional(),
-  city: z.string().optional(),
-  state: z.string().optional(),
-  zip: z.string().optional(),
+  address: z.string().nullish(),
+  city: z.string().nullish(),
+  state: z.string().nullish(),
+  zip: z.string().nullish(),
   long: z.number(),
   lat: z.number(),
 });
@@ -15,10 +15,10 @@ export type LocationMutationSchemaType = z.infer<typeof LocationMutationSchema>;
 export const LocationSchema = z.object({
   _id: z.string(),
   name: z.string(),
-  address: z.string().optional(),
-  city: z.string().optional(),
-  state: z.string().optional(),
-  zip: z.string().optional(),
+  address: z.string().nullish(),
+  city: z.string().nullish(),
+  state: z.string().nullish(),
+  zip: z.string().nullish(),
   location: z.object({
     type: z.string(),
     coordinates: z.tuple([z.number(), z.number()]),
