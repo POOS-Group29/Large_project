@@ -8,12 +8,6 @@ import AddLocationPopup from "../components/AddLocationPopup";
 import { ROUTES } from "../config/routes";
 import { API } from "../services";
 
-const navigation = [
-  { name: "Dashboard", href: "#", current: true },
-  { name: "Calendar", href: "#", current: false },
-  { name: "Teams", href: "#", current: false },
-  { name: "Directory", href: "#", current: false },
-];
 const userNavigation = [
   { name: "Your Profile", onClick: () => {} },
   { name: "Settings", onClick: () => {} },
@@ -26,9 +20,14 @@ const userNavigation = [
   },
 ];
 
-export default function Dashboard(props: React.PropsWithChildren<object>) {
+interface DashboardProps extends React.PropsWithChildren<object> {
+  onSearch?: (search: string) => void;
+}
+
+export default function Dashboard(props: DashboardProps) {
   const { children } = props;
 
+  const [search, setSearch] = useState("");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [user, setUser] = useState({
     name: "",
@@ -83,7 +82,7 @@ export default function Dashboard(props: React.PropsWithChildren<object>) {
                       <a href="#">
                         <img
                           className="h-8 w-auto"
-                          src="https://tailwindui.com/img/logos/mark.svg?color=blue&shade=600"
+                          src="/scubadiver.jpeg"
                           alt="Your Company"
                         />
                       </a>
@@ -105,6 +104,11 @@ export default function Dashboard(props: React.PropsWithChildren<object>) {
                           <input
                             id="search"
                             name="search"
+                            value={search}
+                            onChange={(e) => {
+                              setSearch(e.target.value);
+                              props.onSearch && props.onSearch(e.target.value);
+                            }}
                             className="block w-full rounded-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
                             placeholder="Search"
                             type="search"
@@ -186,23 +190,6 @@ export default function Dashboard(props: React.PropsWithChildren<object>) {
               </div>
 
               <Popover.Panel as="nav" className="lg:hidden" aria-label="Global">
-                <div className="mx-auto max-w-3xl space-y-1 px-2 pb-3 pt-2 sm:px-4">
-                  {navigation.map((item) => (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      aria-current={item.current ? "page" : undefined}
-                      className={clsx(
-                        item.current
-                          ? "bg-gray-100 text-gray-900"
-                          : "hover:bg-gray-50",
-                        "block rounded-md py-2 px-3 text-base font-medium"
-                      )}
-                    >
-                      {item.name}
-                    </a>
-                  ))}
-                </div>
                 <div className="border-t border-gray-200 pb-3 pt-4">
                   <div className="mx-auto flex max-w-3xl items-center px-4 sm:px-6">
                     <div className="flex-shrink-0">

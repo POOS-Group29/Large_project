@@ -68,7 +68,7 @@ export default function VerifyEmail() {
             <div>
               <img
                 className="h-10 w-auto"
-                src="https://tailwindui.com/img/logos/mark.svg?color=blue&shade=600"
+                src="/scubadiver.jpeg"
                 alt="Your Company"
               />
               <h2 className="mt-8 text-2xl font-bold leading-9 tracking-tight text-gray-900">

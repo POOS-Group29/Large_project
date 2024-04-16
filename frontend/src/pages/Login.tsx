@@ -62,7 +62,7 @@ export default function Login() {
             <div>
               <img
                 className="h-16 w-auto"
-                src="/public/scubadiver.jpeg"
+                src="/scubadiver.jpeg"
                 alt="Your Company"
               />
               <h2 className="mt-8 text-2xl font-bold leading-9 tracking-tight text-gray-900">
