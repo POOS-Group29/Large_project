@@ -1,15 +1,25 @@
+import { NoSymbolIcon } from "@heroicons/react/20/solid";
+import { LocationSchemaType } from "@xhoantran/common";
 import { Rating } from "./Rating";
 
 export interface ICard {
-  name: string;
-  lng: number;
-  lat: number;
-  rate: number;
+  location: LocationSchemaType;
   onClick?: () => void;
 }
 
 export const Card = (props: ICard) => {
-  const { name, lng, lat, rate, onClick } = props;
+  const {
+    location: {
+      image,
+      name,
+      difficultyRateCount,
+      difficultyRateValue,
+      location: {
+        coordinates: [lng, lat],
+      },
+    },
+    onClick,
+  } = props;
 
   return (
     <>
@@ -17,17 +27,31 @@ export const Card = (props: ICard) => {
         className="flex flex-col p-4 bg-white shadow-md rounded-lg"
         onClick={onClick}
       >
-        <img
-          className="w-full aspect-video object-cover rounded-lg"
-          src="https://d2p1cf6997m1ir.cloudfront.net/media/thumbnails/73/08/7308015568c5a4ce1ae7d0188490e46b.webp"
-        />
+        {/* Image */}
+        {image ? (
+          <img
+            className="w-full aspect-video object-cover rounded-lg"
+            src={image}
+          />
+        ) : (
+          <div className="w-full aspect-video bg-gray-300 rounded-lg">
+            <div className="w-full h-full flex justify-center items-center">
+              <div className="flex-col">
+                <NoSymbolIcon className="w-12 h-12 m-auto text-gray-400" />
+                <span className="text-lg text-gray-400 text-center">
+                  Not available
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="flex flex-row">
           <div className="text-lg font-bold">{name}</div>
         </div>
 
         {/* Rating */}
-        <Rating rate={rate} />
+        <Rating rate={difficultyRateValue / difficultyRateCount} />
 
         <div className="flex flex-row">
           <div className="text-sm">Longitude: {lng}</div>
