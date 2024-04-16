@@ -1,14 +1,23 @@
 import { Button } from '@/components/Button';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+
+const styles = StyleSheet.create({
+	createButton: {
+		width: '15%',
+		position: 'absolute',
+        bottom: 20,
+        right: 20,
+	},
+})
 
 export function CreateLocation() {
 	const navigation = useNavigation();
 	return (
-		<View style = {{marginTop: 10}}>
+		<View style = {styles.createButton}>
 			<Button
 				buttonStyle={[]}
-				title="Create Location"
+				title="Add"
 				onPress={() => navigation.navigate('CreateLocation') }
 			/>
 		</View>

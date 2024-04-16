@@ -10,34 +10,6 @@ import { Rating } from '@kolking/react-native-rating';
 
 
 const RetrieveLocation = ({route}) => {
-    // const { locationId } = route.params;
-    // const { data: location, refetch, isLoading, error } = useRetrieveLocation({ locationId });
-
-    // const [selectedLocation, setSelectedLocation] = useState(null);
-    // const [currentRating, setCurrentRating] = useState(0);
-    // // Effect for handling new location data and user ratings
-    // useEffect(() => {
-    //     refetch();  // Ensures the latest data is fetched when component mounts or locationId changes
-    // }, [locationId, refetch, currentRating]);
-
-    // useEffect(() => {
-    //     if (location) {
-    //         setSelectedLocation(location); // Update the location when fetched
-    //         if (location.userRating) {
-    //             setCurrentRating(location.userRating.value); // Update the rating if available
-    //         }
-    //     }
-    // }, [location, currentRating]);
-
-    // if (isLoading) return <Text>Loading...</Text>;
-    // if (error) return <Text>Error fetching location: {error.message}</Text>;
-
-    // return (
-    //     <View style={styles.container}>
-    //       {selectedLocation && <LocationDetails location={selectedLocation} />}
-    //       {selectedLocation && <RateLocation  currentRating={currentRating} location={selectedLocation} />}
-    //     </View>
-    // );
     const { locationId } = route.params;
     const { data: location, refetch } = useRetrieveLocation({ locationId });
     const [currentRating, setCurrentRating] = useState(0);

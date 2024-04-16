@@ -7,11 +7,11 @@ import { useDebounceCallback } from 'usehooks-ts';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { useIsFocused } from '@react-navigation/native';
 
-
-import { CreateLocation } from '@/feature/location/components/CreateLocation';
 import { ListLocation } from '@/feature/location/components/ListLocation';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useAuthStorage } from '@/store/auth';
+import { CreateLocation } from '@/feature/location/components/CreateLocation';
+
 // import { useLocationStorage } from '@/store/location';
 
 export default function Main() {
@@ -68,9 +68,9 @@ export default function Main() {
 
 	const snapPoints = useMemo(() => ['25%', '50%', '90%'], []);
 
-	const handleSheetChanges = useCallback((index: number) => {
-		console.log('handleSheetChanges', index);
-	}, []);
+	// const handleSheetChanges = useCallback((index: number) => {
+	// 	console.log('handleSheetChanges', index);
+	// }, []);
 	const logout = ()=>{
 		setToken('');
 		setUser(null);
@@ -98,17 +98,17 @@ export default function Main() {
 			</MapView>
 			<BottomSheet
 				ref={bottomSheetRef}
-				onChange={handleSheetChanges}
+				// onChange={handleSheetChanges}
 				snapPoints={snapPoints}
 			>
 				<ListLocation locations={listLocation.data ?? []} />
-
 			</BottomSheet> 
 			<Pressable style={styles.logoutButton}
 				onPress={logout}
 			>
 				<Text style={styles.logoutButtonText}>Logout</Text>
 			</Pressable>
+			<CreateLocation />
 		</View>
 	);
 }

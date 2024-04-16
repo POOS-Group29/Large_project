@@ -3,7 +3,6 @@ import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
 import { Button } from '@/components/Button';
 import { useRateLocation, UseRateLocationOptions } from '@/feature/location/api/rate';
 import { useUpdateLocation, UseUpdateLocationOptions } from '@/feature/location/api/update';
-
 import { Rating } from '@kolking/react-native-rating';
 import { useNavigation } from '@react-navigation/native';
 
@@ -18,22 +17,7 @@ const RetrieveLocation = ({onRatingSubmit,currentRating, location}) => {
     };
 
     const submitRating = async () => {
-        // if (location?.userRating === null){
-        //     rateLocation.mutate({
-        //         locationId: location._id,
-        //         value: rating,
-        //     })
-        //     Alert.alert('Rating submitted!');
-            
-        // } else {
-        //     updateLocation.mutate({
-        //         locationId: location._id,
-        //         value: rating,
-        //     });
-        //     Alert.alert('Rating updated!');
-        // }
-        //setCurrentRating(rating);
-        //navigate.navigate('Main');
+
         if (location?.userRating === null) {
             rateLocation.mutate({
                 locationId: location._id,
@@ -75,8 +59,6 @@ const RetrieveLocation = ({onRatingSubmit,currentRating, location}) => {
 };
 
 const styles = StyleSheet.create({
-    
-
   userRatingContainer: {
     marginTop: 10,
     alignItems: 'center',
