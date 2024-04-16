@@ -71,6 +71,7 @@ export default function Home() {
                     <>
                       {pointsData.map((point, index) => (
                         <Card
+                        globeRef={globeRef}
                           onClick={() => setSelectedPoint(point)}
                           key={index}
                           location={point}
