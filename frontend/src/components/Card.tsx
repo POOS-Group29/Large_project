@@ -40,7 +40,7 @@ export const Card = (props: ICard) => {
     <>
       <div className="flex flex-col p-4 bg-white shadow-md rounded-lg">
         {/* Image */}
-        {images && <ImageSlide images={images} />}
+        <ImageSlide images={images} />
         <div
           onClick={() => {
             onClick && onClick(); // Call onClick function if provided
@@ -59,14 +59,6 @@ export const Card = (props: ICard) => {
             {types.map((type) => (
               <Badge key={type} text={type} />
             ))}
-          </div>
-
-          {/* Coordinates */}
-          <div className="flex flex-row">
-            <span className="text-sm text-gray-900">Coordinates: </span>
-            <span className="text-sm text-gray-900">
-              {lat.toFixed(2)}, {lng.toFixed(2)}
-            </span>
           </div>
         </div>
       </div>
