@@ -29,12 +29,14 @@ export const Card = (props: ICard) => {
 
   const getGlobeLocation = (lng: number, lat: number) => {
     // Function logic for getting globe location
-    console.log("Getting globe location...");
-    globeRef.current?.pointOfView({
-      lat: lat,
-      lng: lng,
-      altitude: 0.5
-    }, 1000);
+    globeRef.current?.pointOfView(
+      {
+        lat: lat,
+        lng: lng,
+        altitude: 0.5,
+      },
+      1000
+    );
   };
 
   return (
