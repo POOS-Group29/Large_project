@@ -2525,10 +2525,10 @@
   resolved "https://registry.npmjs.org/@ungap/structured-clone/-/structured-clone-1.2.0.tgz"
   integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
 
-"@xhoantran/common@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@xhoantran/common/-/common-1.0.2.tgz#e5cd870689d0dbe9849c6883811d4c0ab71b8a37"
-  integrity sha512-GFXm6dngh0mrvKnO8TAWK0gR9kTLEWyxhiWjeAtSkUnmHwSLZ6ndvsPE0vWl1mMD5nRxmaeTnSj7Ye7FZ645LA==
+"@xhoantran/common@^1.2.5":
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/@xhoantran/common/-/common-1.2.5.tgz#e3bac33cfb6a9e87bff9ae269269752ac5e3e6e5"
+  integrity sha512-vInjWRJjT+U3k30lzzfQhAo8vZqNkJGw0EZX4Qfxj1BB7Q9WY9Bh8zip4ObPaEKG5HJ1RuFgV9RC9Vk3tE+Syg==
   dependencies:
     ky "^1.2.3"
     zod "^3.22.4"

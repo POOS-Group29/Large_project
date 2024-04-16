@@ -15,6 +15,7 @@ export const LocationSchema = z.object({
 	difficultyRateValue: z.number(),
 	createdAt: z.string(),
 	updatedAt: z.string(),
+	image: z.string(),
 });
 
 export type LocationSchemaType = z.infer<typeof LocationSchema>;

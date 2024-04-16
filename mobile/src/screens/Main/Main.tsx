@@ -1,10 +1,11 @@
 import { useListLocation } from '@/feature/location/api/list';
-import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useRef} from 'react';
 import { View, Text, StyleSheet, Button, Pressable } from 'react-native';
 import type { Region } from 'react-native-maps';
 import MapView, { Marker } from 'react-native-maps';
 import { useDebounceCallback } from 'usehooks-ts';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import { useIsFocused } from '@react-navigation/native';
 
 
 import { CreateLocation } from '@/feature/location/components/CreateLocation';
@@ -23,7 +24,7 @@ export default function Main() {
 		longitudeDelta: 0.0421,
 	});
 	const debouncedSetCurrentRegion = useDebounceCallback(setCurrentRegion, 300);
-
+	const isFocus = useIsFocused();
 	const listLocation = useListLocation({
 		lat: currentRegion.latitude,
 		long: currentRegion.longitude,
@@ -33,9 +34,7 @@ export default function Main() {
 
 	useEffect(() => {
 		void listLocation.refetch();
-	}, [currentRegion]);
-
-	console.log("listLocation", listLocation.data);
+	}, [currentRegion, isFocus]);
 	
 	const styles = StyleSheet.create({
 		container: {

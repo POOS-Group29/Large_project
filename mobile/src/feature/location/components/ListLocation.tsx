@@ -7,6 +7,7 @@ import {
 	Text,
 	TouchableOpacity,
 	View,
+	Image
 } from 'react-native';
 import { CreateLocation } from './CreateLocation';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -53,11 +54,7 @@ const styles = StyleSheet.create({
 		borderRadius: 20,  // Rounded corners
 		padding: 16,  // Padding inside each item
 		marginBottom: 1,  // Space between items
-		// shadowColor: '#000',  // Shadow for 3D effect
-		// shadowOffset: { width: 0, height: 2 },
 		shadowOpacity: 0.1,
-		// shadowRadius: 6,
-		// elevation: 3,  // Elevation for Android
 	  },
 	  text: {
 		fontSize: 17,
@@ -68,6 +65,9 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		color: '#666',  // Slightly lighter color for less important text
 		marginTop: 4,  // Space between main text and subtext
+	  },
+	  imageContainer: {
+		
 	  }
 	
 });
@@ -91,28 +91,37 @@ export function ListLocation(props: ListLocationProps) {
 			<CreateLocation/>
 
 			<ScrollView style={styles.scrollView}>
-					
-					{ locations.map((location, index) => (
-						<View
-							// style={[gutters.marginVertical_16, borders.gray900, styles.slideView]}
-							style={styles.slideView}
-							key={index}
-						>
-							<Pressable onPress={() => navigation.navigate('RetrieveLocation', {locationId: location._id})}>
-								<View>
-									<Text style={styles.text}>{location.name}</Text>
-									<Text style={styles.subText}>{location.address}</Text>
-									<View style={{
-										flexDirection: 'row',
-									}}>
-										<Rating size={17} rating={calculateRating(location.difficultyRateValue, location.difficultyRateCount)} disabled />
-										<Text style={{marginLeft:5}}>{location.difficultyRateCount}</Text>
-									</View>
+				{ locations.map((location, index) => (
+					<View
+						// style={[gutters.marginVertical_16, borders.gray900, styles.slideView]}
+						style={styles.slideView}
+						key={index}
+					>
+						<Pressable onPress={() => navigation.navigate('RetrieveLocation', {locationId: location._id})}>
+							<View>
+								<View style={styles.imageContainer}>
+									<Image
+										style={{width: '100%', height: 200}}
+										alt={location.name}
+										source={{
+										uri: location.image,
+										}}
+									/>
 								</View>
-							</Pressable>
-						</View>
-					))}
-				</ScrollView>
+								
+								<Text style={styles.text}>{location.name}</Text>
+								{/* <Text style={styles.subText}>{location.address}</Text> */}
+								<View style={{
+									flexDirection: 'row',
+								}}>
+									<Rating size={17} rating={calculateRating(location.difficultyRateValue, location.difficultyRateCount)} disabled />
+									<Text style={{marginLeft:5}}>{location.difficultyRateCount}</Text>
+								</View>
+							</View>
+						</Pressable>
+					</View>
+				))}
+			</ScrollView>
 			
 		</View>
 	);
