@@ -32,10 +32,7 @@ LocationRoutes.get("/pending", adminMiddleware, async (req, res) => {
 
 LocationRoutes.put("/approve/:id", adminMiddleware, async (req, res) => {
   const { id } = req.params;
-  const location = await Location.findByIdAndUpdate(
-    id,
-    { approved: true },
-  );
+  const location = await Location.findByIdAndUpdate(id, { approved: true });
   res.json(location);
 });
 
@@ -121,15 +118,11 @@ LocationRoutes.get("/:id", async (req, res) => {
 // Update a location
 LocationRoutes.put("/:id", adminMiddleware, async (req, res) => {
   const { id } = req.params;
-  const { name, address, city, state, zip, lat, long } = req.body;
+  const { long, lat, ...rest } = req.body;
   const location = await Location.findByIdAndUpdate(
     id,
     {
-      name,
-      address,
-      city,
-      state,
-      zip,
+      ...rest,
       location: {
         type: "Point",
         coordinates: [parseFloat(long), parseFloat(lat)],
@@ -137,7 +130,12 @@ LocationRoutes.put("/:id", adminMiddleware, async (req, res) => {
     },
     { new: true }
   );
-  res.json(location);
+
+  if (!location) {
+    return res.status(404).json({ message: "Location not found" });
+  }
+
+  return res.json(location);
 });
 
 // Delete a location
