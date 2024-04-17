@@ -16,7 +16,7 @@ AuthRoutes.post("/signin", async (req, res) => {
   const user = await User.findOne({ email });
 
   if (user && (await user.matchPasswords(password))) {
-    const { _id, name, email, verified } = user;
+    const { _id, name, email, verified, isAdmin } = user;
     logger.info(`User ${email} signed in`);
 
     if (!verified) {
@@ -32,6 +32,7 @@ AuthRoutes.post("/signin", async (req, res) => {
           _id,
           name,
           email,
+          isAdmin,
         },
       },
       AuthConfig.secret,
@@ -39,7 +40,7 @@ AuthRoutes.post("/signin", async (req, res) => {
         expiresIn: AuthConfig.jwtExpiration,
       }
     );
-    res.json({ token, user: { _id, name, email } });
+    res.json({ token, user: { _id, name, email, isAdmin } });
     return;
   }
 
