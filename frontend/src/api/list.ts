@@ -12,14 +12,21 @@ type useListLocationOptions = {
   config?: QueryConfig<QueryFnType>;
 };
 
-export const useListLocation = ({ long, lat, page = 1, config }: useListLocationOptions) => {
+export const useListLocation = ({
+  long,
+  lat,
+  page = 1,
+  config,
+}: useListLocationOptions) => {
   return useQuery<ExtractFnReturnType<QueryFnType>>({
     ...config,
-    queryKey: ["location"],
-    queryFn: () => API.location.list({
-      long,
-      lat,
-      page,
-    }),
+    queryKey: ["location", { long, lat, page }],
+    queryFn: () =>
+      API.location.list({
+        long,
+        lat,
+        page,
+        name: "",
+      }),
   });
 };

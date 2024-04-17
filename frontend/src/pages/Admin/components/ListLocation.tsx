@@ -37,7 +37,7 @@ export const ListLocation = () => {
         page: pageParam,
         name: searchDebounced,
       }),
-    initialPageParam: 0,
+    initialPageParam: 1,
     getNextPageParam: (
       lastPage: string | any[],
       _allPages: any,

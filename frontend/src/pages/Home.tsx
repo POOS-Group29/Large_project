@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Globe, { GlobeMethods } from "react-globe.gl";
-import { useDebounceCallback } from "usehooks-ts";
 import { Card } from "../components/Card";
 import { LocationDetail } from "../components/LocationDetail";
 import { Pagination } from "../components/Pagination";
-import { API } from "../lib/ky";
 import Dashboard from "./Dashboard";
 
 import type { LocationSchemaType } from "@xhoantran/common";
+import { useListLocation } from "../api/list";
+import useDebounce from "../utils/useDebounce";
 
 interface IPoint extends LocationSchemaType {
   lat: number;
@@ -28,7 +28,6 @@ const transformLocation = (location: LocationSchemaType): IPoint => {
 };
 
 export default function Home() {
-  const [pointsData, setPointsData] = useState<LocationSchemaType[]>([]);
   const [selectedPoint, setSelectedPoint] = useState<LocationSchemaType | null>(
     null
   );
@@ -37,23 +36,16 @@ export default function Home() {
     lng: 0,
     altitude: 2.5,
   });
+  const povDebounced = useDebounce(pov, 100);
   const [prevPov, setPrevPov] = useState(pov);
-  const setPovDebounced = useDebounceCallback(setPov, 50);
   const globeRef = useRef<GlobeMethods | undefined>();
 
-  useEffect(() => {
-    if (selectedPoint === null || pov === prevPov) {
-      API.location
-        .list({
-          long: pov.lng,
-          lat: pov.lat,
-          name: "",
-        })
-        .then((data) =>
-          setPointsData(data.map((location) => transformLocation(location)))
-        );
-    }
-  }, [pov, selectedPoint, prevPov]);
+  const listLocation = useListLocation({
+    long: povDebounced.lng,
+    lat: povDebounced.lat,
+  });
+
+  const transformedData = listLocation.data?.map(transformLocation) || [];
 
   const onSelectedLocation = (location: LocationSchemaType) => {
     setSelectedPoint(location);
@@ -94,7 +86,7 @@ export default function Home() {
                     />
                   ) : (
                     <>
-                      {pointsData.map((point, index) => (
+                      {transformedData.map((point, index) => (
                         <Card
                           onClick={() => onSelectedLocation(point)}
                           key={index}
@@ -114,13 +106,13 @@ export default function Home() {
               <div className="px-4 sm:px-6 lg:px-8 flex justify-center items-center">
                 <Globe
                   ref={globeRef}
-                  pointsData={pointsData}
+                  pointsData={transformedData}
                   onPointClick={(point) =>
                     onSelectedLocation(point as LocationSchemaType)
                   }
                   globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
                   backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
-                  onZoom={(newPov) => setPovDebounced(newPov)}
+                  onZoom={(newPov) => setPov(newPov)}
                   pointAltitude={(point) =>
                     // @ts-expect-error _id is in LocationSchemaType
                     point._id === selectedPoint?._id ? 0.3 : 0.1
