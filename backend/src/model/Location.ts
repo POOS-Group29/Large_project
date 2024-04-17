@@ -95,6 +95,8 @@ const locationSchema = new Schema<ILocation>(
 );
 
 locationSchema.index({ location: "2dsphere" }, { unique: true });
+locationSchema.index({ name: "text" });
+locationSchema.index({ approved: 1 });
 
 const Location: Model<ILocation> = model("Location", locationSchema);
 
