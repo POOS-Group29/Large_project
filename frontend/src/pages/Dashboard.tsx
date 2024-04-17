@@ -49,7 +49,7 @@ export default function Dashboard(props: DashboardProps) {
   }, []);
 
   useEffect(() => {
-    if (!debouncedSearchValue && user?.isAdmin) {
+    if (!debouncedSearchValue && user?.isAdmin || debouncedSearchValue === "") {
       setResults([]);
     } else {
       API.location
