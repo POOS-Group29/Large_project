@@ -42,15 +42,17 @@ export default function Home() {
   const globeRef = useRef<GlobeMethods | undefined>();
 
   useEffect(() => {
-    API.location
-      .list({
-        long: pov.lng,
-        lat: pov.lat,
-      })
-      .then((data) =>
-        setPointsData(data.map((location) => transformLocation(location)))
-      );
-  }, [pov]);
+    if (selectedPoint === null || pov === prevPov) {
+      API.location
+        .list({
+          long: pov.lng,
+          lat: pov.lat,
+        })
+        .then((data) =>
+          setPointsData(data.map((location) => transformLocation(location)))
+        );
+    }
+  }, [pov, selectedPoint, prevPov]);
 
   const onSelectedLocation = (location: LocationSchemaType) => {
     setSelectedPoint(location);
