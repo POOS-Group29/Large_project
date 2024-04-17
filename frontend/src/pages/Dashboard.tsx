@@ -12,8 +12,6 @@ import { ROUTES } from "../config/routes";
 import { API } from "../services";
 
 const userNavigation = [
-  { name: "Your Profile", onClick: () => {} },
-  { name: "Settings", onClick: () => {} },
   {
     name: "Sign out",
     onClick: () => {
