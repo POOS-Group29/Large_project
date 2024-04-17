@@ -21,5 +21,8 @@ export const useDeleteLocation = ({
       });
       toast.success("Location deleted successfully");
     },
+    onError: (error) => {
+      toast.error(error.message);
+    },
   });
 };

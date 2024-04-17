@@ -10,12 +10,17 @@ interface ILocation {
   name?: string;
   long?: number;
   lat?: number;
-  types?: string[];
-  marineLife?: string[];
+  types?: string[] | null;
+  marineLife?: string[] | null;
   maximumDepth?: {
     metters: number;
     feet: number;
   } | null;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  zip?: string | null;
+  country?: string | null;
 }
 
 export const updateLocation = async (
@@ -43,6 +48,9 @@ export const useUpdateLocation = ({
     onSuccess: (_, location) => {
       queryClient.invalidateQueries({
         queryKey: ["location", location._id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["location"],
       });
       toast.success("Location updated successfully");
     },

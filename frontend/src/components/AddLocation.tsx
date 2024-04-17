@@ -225,7 +225,7 @@ export const AddLocation = () => {
                                 htmlFor="maximumDepth"
                                 className="block text-sm font-medium leading-6 text-gray-900"
                               >
-                                Maximum Depth
+                                Maximum Depth (m)
                               </label>
                               <div className="mt-2">
                                 <input
