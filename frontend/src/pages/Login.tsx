@@ -48,8 +48,10 @@ export default function Login() {
       localStorage.setItem("token", res.token);
       navigate(ROUTES.DASHBOARD);
     } catch (error) {
-      if (error instanceof HTTPError && error.response.status === 401) {
-        setMessage({ message: "Invalid email or password", isError: true });
+      if (error instanceof HTTPError) {
+        error.response.json().then((data) => {
+          setMessage({ message: data.message, isError: true });
+        });
       }
     }
   });
