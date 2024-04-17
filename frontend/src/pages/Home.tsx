@@ -43,6 +43,7 @@ export default function Home() {
 
   useEffect(() => {
     if (selectedPoint === null || pov === prevPov) {
+      console.log("fetching data");
       API.location
         .list({
           long: pov.lng,
