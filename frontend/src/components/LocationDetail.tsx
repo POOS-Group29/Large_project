@@ -1,7 +1,6 @@
 import { ChevronLeftIcon } from "@heroicons/react/20/solid";
 import type { LocationSchemaType } from "@xhoantran/common";
 import { useEffect, useState } from "react";
-import { GlobeMethods } from "react-globe.gl";
 
 import { API } from "../services";
 import { Badge } from "./Badge";
@@ -11,13 +10,11 @@ import { Rating } from "./Rating";
 interface LocationDetailProps {
   id: string;
   onClickBack: () => void;
-  globeRef: React.MutableRefObject<GlobeMethods | undefined>;
   onCardClick?: (pointId: string) => void; // Add onCardClick to the interface
-  resetPointColor?: () => void; // Add resetPointColor to the interface
 }
 
 export const LocationDetail = (props: LocationDetailProps) => {
-  const { id, onClickBack, globeRef, resetPointColor } = props;
+  const { id, onClickBack } = props;
 
   const [location, setLocation] = useState<LocationSchemaType | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -63,7 +60,11 @@ export const LocationDetail = (props: LocationDetailProps) => {
           <p>{location.address}</p>
 
           <Rating
-            rate={location.difficultyRateValue / location.difficultyRateCount}
+            rate={parseFloat(
+              (
+                location.difficultyRateValue / location.difficultyRateCount
+              ).toFixed(1)
+            )}
           />
 
           {location.city && location.state && location.zip && (

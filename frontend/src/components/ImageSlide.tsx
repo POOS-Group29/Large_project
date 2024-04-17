@@ -28,6 +28,7 @@ const ImageSlide: React.FC<ImageSlideProps> = ({ images }) => {
               src={image}
               alt={`image ${index + 1}`}
               className="h-full w-full object-cover"
+              loading="lazy"
             />
           ))}
         </Carousel>

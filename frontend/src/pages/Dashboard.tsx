@@ -1,19 +1,16 @@
 import { Menu, Popover, Transition } from "@headlessui/react";
 import { MagnifyingGlassIcon, UserCircleIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { LocationSchemaType } from "@xhoantran/common";
 import clsx from "clsx";
 import { HTTPError } from "ky";
-import React, { Fragment, useEffect, useState } from "react";
-import AddLocationPopup from "../components/AddLocationPopup";
+import React, { Fragment, useEffect, useRef, useState } from "react";
+import { useDebounceValue, useOnClickOutside } from "usehooks-ts";
+
+import { AddLocation } from "../components/AddLocation";
 import { ROUTES } from "../config/routes";
 import { API } from "../services";
 
-const navigation = [
-  { name: "Dashboard", href: "#", current: true },
-  { name: "Calendar", href: "#", current: false },
-  { name: "Teams", href: "#", current: false },
-  { name: "Directory", href: "#", current: false },
-];
 const userNavigation = [
   { name: "Your Profile", onClick: () => {} },
   { name: "Settings", onClick: () => {} },
@@ -26,22 +23,23 @@ const userNavigation = [
   },
 ];
 
-export default function Dashboard(props: React.PropsWithChildren<object>) {
+interface DashboardProps extends React.PropsWithChildren<object> {
+  onSelectedLocation?: (location: LocationSchemaType) => void;
+}
+
+export default function Dashboard(props: DashboardProps) {
   const { children } = props;
 
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const [search, setSearch] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [results, setResults] = useState<LocationSchemaType[]>([]);
+  const [debouncedSearchValue] = useDebounceValue(search, 100);
+
   const [user, setUser] = useState({
     name: "",
     email: "",
   });
-
-  const openPopup = () => {
-    setIsPopupOpen(true);
-  };
-
-  const closePopup = () => {
-    setIsPopupOpen(false);
-  };
 
   useEffect(() => {
     API.auth
@@ -60,6 +58,25 @@ export default function Dashboard(props: React.PropsWithChildren<object>) {
         }
       });
   }, []);
+
+  useEffect(() => {
+    if (!debouncedSearchValue) {
+      setResults([]);
+    } else {
+      API.location
+        .search({
+          name: debouncedSearchValue,
+        })
+        .then((data) => {
+          setResults(data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  }, [debouncedSearchValue]);
+
+  useOnClickOutside(searchRef, () => setSearchOpen(false));
 
   return (
     <>
@@ -83,7 +100,7 @@ export default function Dashboard(props: React.PropsWithChildren<object>) {
                       <a href="#">
                         <img
                           className="h-8 w-auto"
-                          src="https://tailwindui.com/img/logos/mark.svg?color=blue&shade=600"
+                          src="/scubadiver.jpeg"
                           alt="Your Company"
                         />
                       </a>
@@ -91,7 +108,7 @@ export default function Dashboard(props: React.PropsWithChildren<object>) {
                   </div>
                   <div className="min-w-0 flex-1 md:px-8 lg:px-0 xl:col-span-6">
                     <div className="flex items-center px-6 py-4 md:mx-auto md:max-w-3xl lg:mx-0 lg:max-w-none xl:px-0">
-                      <div className="w-full">
+                      <div className="w-full relative" ref={searchRef}>
                         <label htmlFor="search" className="sr-only">
                           Search
                         </label>
@@ -105,11 +122,54 @@ export default function Dashboard(props: React.PropsWithChildren<object>) {
                           <input
                             id="search"
                             name="search"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
                             className="block w-full rounded-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
                             placeholder="Search"
                             type="search"
+                            onFocus={() => setSearchOpen(true)}
                           />
                         </div>
+                        {searchOpen && (
+                          <div className="w-full absolute z-[51]">
+                            <div className="bg-white border border-gray-200 rounded-md shadow-lg">
+                              {results.length === 0 ? (
+                                debouncedSearchValue.length > 0 ? (
+                                  <a className="block px-6 py-4 text-sm text-gray-700">
+                                    No results found
+                                  </a>
+                                ) : (
+                                  <a className="block px-6 py-4 text-sm text-gray-700">
+                                    Start typing to search
+                                  </a>
+                                )
+                              ) : (
+                                results.map((location) => (
+                                  <a
+                                    key={location._id}
+                                    className="block px-6 py-4 text-sm text-gray-700 hover:bg-gray-100"
+                                    onClick={() => {
+                                      if (props.onSelectedLocation) {
+                                        props.onSelectedLocation(location);
+                                        setSearchOpen(false);
+                                      }
+                                    }}
+                                  >
+                                    <p className="font-semibold">
+                                      {location.name}
+                                    </p>
+                                    <p className="text-gray-500">
+                                      Maximum Depth:{" "}
+                                      {location.maximumDepth
+                                        ? `${location.maximumDepth.metters}m`
+                                        : "N/A"}
+                                    </p>
+                                  </a>
+                                ))
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -173,36 +233,12 @@ export default function Dashboard(props: React.PropsWithChildren<object>) {
                       </Transition>
                     </Menu>
 
-                    <a
-                      href="#"
-                      onClick={openPopup} // Call openPopup function when the anchor is clicked
-                      className="ml-6 inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                    >
-                      New Location
-                    </a>
-                    {isPopupOpen && <AddLocationPopup onClose={closePopup} />}
+                    <AddLocation />
                   </div>
                 </div>
               </div>
 
               <Popover.Panel as="nav" className="lg:hidden" aria-label="Global">
-                <div className="mx-auto max-w-3xl space-y-1 px-2 pb-3 pt-2 sm:px-4">
-                  {navigation.map((item) => (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      aria-current={item.current ? "page" : undefined}
-                      className={clsx(
-                        item.current
-                          ? "bg-gray-100 text-gray-900"
-                          : "hover:bg-gray-50",
-                        "block rounded-md py-2 px-3 text-base font-medium"
-                      )}
-                    >
-                      {item.name}
-                    </a>
-                  ))}
-                </div>
                 <div className="border-t border-gray-200 pb-3 pt-4">
                   <div className="mx-auto flex max-w-3xl items-center px-4 sm:px-6">
                     <div className="flex-shrink-0">

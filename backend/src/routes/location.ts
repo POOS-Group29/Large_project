@@ -16,7 +16,7 @@ LocationRoutes.get("/search", async (req, res) => {
   try {
     const locations = await Location.find({
       name: { $regex: new RegExp(name as string, "i") },
-    });
+    }).limit(10);
     return res.json(locations);
   } catch (error) {
     logger.error(error);
@@ -55,8 +55,6 @@ LocationRoutes.get("/", async (req, res) => {
     return res.status(500).json({ message: "Error fetching locations" });
   }
 });
-
-
 
 // Create a new location
 LocationRoutes.post("/", async (req, res) => {
