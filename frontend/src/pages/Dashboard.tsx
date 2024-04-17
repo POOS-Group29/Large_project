@@ -9,7 +9,8 @@ import { useDebounceValue, useOnClickOutside } from "usehooks-ts";
 
 import { AddLocation } from "../components/AddLocation";
 import { ROUTES } from "../config/routes";
-import { API } from "../services";
+import { API } from "../lib/ky";
+import { useAuthStore } from "../lib/zustand";
 
 const userNavigation = [
   { name: "Your Profile", onClick: () => {} },
@@ -30,26 +31,18 @@ interface DashboardProps extends React.PropsWithChildren<object> {
 export default function Dashboard(props: DashboardProps) {
   const { children } = props;
 
+  const { user, setUser } = useAuthStore();
+
   const searchRef = useRef<HTMLInputElement>(null);
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [results, setResults] = useState<LocationSchemaType[]>([]);
   const [debouncedSearchValue] = useDebounceValue(search, 100);
 
-  const [user, setUser] = useState({
-    name: "",
-    email: "",
-  });
-
   useEffect(() => {
     API.auth
       .fetchProfile()
-      .then((user) =>
-        setUser({
-          name: user.name,
-          email: user.email,
-        })
-      )
+      .then((data) => setUser(data))
       .catch((error) => {
         if (error instanceof HTTPError) {
           if (error.response.status === 401) {
@@ -57,10 +50,11 @@ export default function Dashboard(props: DashboardProps) {
           }
         }
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (!debouncedSearchValue) {
+    if (!debouncedSearchValue && user?.isAdmin) {
       setResults([]);
     } else {
       API.location
@@ -74,6 +68,7 @@ export default function Dashboard(props: DashboardProps) {
           console.error(error);
         });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchValue]);
 
   useOnClickOutside(searchRef, () => setSearchOpen(false));
@@ -97,78 +92,82 @@ export default function Dashboard(props: DashboardProps) {
                 <div className="relative flex justify-between lg:gap-8 xl:grid xl:grid-cols-12">
                   <div className="flex md:absolute md:inset-y-0 md:left-0 lg:static xl:col-span-2">
                     <div className="flex flex-shrink-0 items-center">
-                      <a href="#">
+                      <a>
                         <img
                           className="h-8 w-auto"
                           src="/scubadiver.jpeg"
-                          alt="Your Company"
+                          alt="Scuparadise"
                         />
                       </a>
                     </div>
                   </div>
                   <div className="min-w-0 flex-1 md:px-8 lg:px-0 xl:col-span-6">
-                    <div className="flex items-center px-6 py-4 md:mx-auto md:max-w-3xl lg:mx-0 lg:max-w-none xl:px-0">
+                    <div className="flex items-center px-6 py-4 md:mx-auto md:max-w-3xl lg:mx-0 lg:max-w-none xl:px-0 h-14">
                       <div className="w-full relative" ref={searchRef}>
-                        <label htmlFor="search" className="sr-only">
-                          Search
-                        </label>
-                        <div className="relative">
-                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                            <MagnifyingGlassIcon
-                              className="h-5 w-5 text-gray-400"
-                              aria-hidden="true"
-                            />
-                          </div>
-                          <input
-                            id="search"
-                            name="search"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="block w-full rounded-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
-                            placeholder="Search"
-                            type="search"
-                            onFocus={() => setSearchOpen(true)}
-                          />
-                        </div>
-                        {searchOpen && (
-                          <div className="w-full absolute z-[51]">
-                            <div className="bg-white border border-gray-200 rounded-md shadow-lg">
-                              {results.length === 0 ? (
-                                debouncedSearchValue.length > 0 ? (
-                                  <a className="block px-6 py-4 text-sm text-gray-700">
-                                    No results found
-                                  </a>
-                                ) : (
-                                  <a className="block px-6 py-4 text-sm text-gray-700">
-                                    Start typing to search
-                                  </a>
-                                )
-                              ) : (
-                                results.map((location) => (
-                                  <a
-                                    key={location._id}
-                                    className="block px-6 py-4 text-sm text-gray-700 hover:bg-gray-100"
-                                    onClick={() => {
-                                      if (props.onSelectedLocation) {
-                                        props.onSelectedLocation(location);
-                                        setSearchOpen(false);
-                                      }
-                                    }}
-                                  >
-                                    <p className="font-semibold">
-                                      {location.name}
-                                    </p>
-                                    <p className="text-gray-500">
-                                      Maximum Depth:{" "}
-                                      {location.maximumDepth
-                                        ? `${location.maximumDepth.metters}m`
-                                        : "N/A"}
-                                    </p>
-                                  </a>
-                                ))
-                              )}
+                        {!user?.isAdmin && (
+                          <>
+                            <label htmlFor="search" className="sr-only">
+                              Search
+                            </label>
+                            <div className="relative">
+                              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                <MagnifyingGlassIcon
+                                  className="h-5 w-5 text-gray-400"
+                                  aria-hidden="true"
+                                />
+                              </div>
+                              <input
+                                id="search"
+                                name="search"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="block w-full rounded-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
+                                placeholder="Search"
+                                type="search"
+                                onFocus={() => setSearchOpen(true)}
+                              />
                             </div>
-                          </div>
+                            {searchOpen && (
+                              <div className="w-full absolute z-[51]">
+                                <div className="bg-white border border-gray-200 rounded-md shadow-lg">
+                                  {results.length === 0 ? (
+                                    debouncedSearchValue.length > 0 ? (
+                                      <a className="block px-6 py-4 text-sm text-gray-700">
+                                        No results found
+                                      </a>
+                                    ) : (
+                                      <a className="block px-6 py-4 text-sm text-gray-700">
+                                        Start typing to search
+                                      </a>
+                                    )
+                                  ) : (
+                                    results.map((location) => (
+                                      <a
+                                        key={location._id}
+                                        className="block px-6 py-4 text-sm text-gray-700 hover:bg-gray-100"
+                                        onClick={() => {
+                                          if (props.onSelectedLocation) {
+                                            props.onSelectedLocation(location);
+                                            setSearchOpen(false);
+                                          }
+                                        }}
+                                      >
+                                        <p className="font-semibold">
+                                          {location.name}
+                                        </p>
+                                        <p className="text-gray-500">
+                                          Maximum Depth:{" "}
+                                          {location.maximumDepth
+                                            ? `${location.maximumDepth.metters}m`
+                                            : "N/A"}
+                                        </p>
+                                      </a>
+                                    ))
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
                     </div>
@@ -249,10 +248,10 @@ export default function Dashboard(props: DashboardProps) {
                     </div>
                     <div className="ml-3">
                       <div className="text-base font-medium text-gray-800">
-                        {user.name}
+                        {user?.name}
                       </div>
                       <div className="text-sm font-medium text-gray-500">
-                        {user.email}
+                        {user?.email}
                       </div>
                     </div>
                     <button

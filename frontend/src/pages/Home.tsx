@@ -4,7 +4,7 @@ import { useDebounceCallback } from "usehooks-ts";
 import { Card } from "../components/Card";
 import { LocationDetail } from "../components/LocationDetail";
 import { Pagination } from "../components/Pagination";
-import { API } from "../services";
+import { API } from "../lib/ky";
 import Dashboard from "./Dashboard";
 
 import type { LocationSchemaType } from "@xhoantran/common";
@@ -42,9 +42,7 @@ export default function Home() {
   const globeRef = useRef<GlobeMethods | undefined>();
 
   useEffect(() => {
-    console.log(pov, prevPov, selectedPoint)
     if (selectedPoint === null || pov === prevPov) {
-      console.log("fetching data");
       API.location
         .list({
           long: pov.lng,
@@ -54,7 +52,6 @@ export default function Home() {
           setPointsData(data.map((location) => transformLocation(location)))
         );
     }
-    console.log("fetching data end");
   }, [pov, selectedPoint, prevPov]);
 
   const onSelectedLocation = (location: LocationSchemaType) => {

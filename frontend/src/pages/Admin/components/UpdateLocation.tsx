@@ -1,38 +1,33 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { XCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Fragment, useState } from "react";
+import { LocationSchemaType } from "@xhoantran/common";
+import { Fragment, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
-import { API } from "../lib/ky";
+import { useUpdateLocation } from "../../../api/update";
 
 const schema = z.object({
-  name: z.string(),
+  _id: z.string(),
+  name: z.string().nullish(),
   address: z.string().nullish(),
   city: z.string().nullish(),
   state: z.string().nullish(),
   zip: z.string().nullish(),
+  long: z.string().nullish(),
+  lat: z.string().nullish(),
   maximumDepth: z.string().nullish(),
-  long: z.string().refine((value) => {
-    return (
-      value.length === 0 ||
-      (!isNaN(parseFloat(value)) &&
-        parseFloat(value) >= -180 &&
-        parseFloat(value) <= 180)
-    );
-  }),
-  lat: z.string().refine((value) => {
-    return (
-      value.length === 0 ||
-      (!isNaN(parseFloat(value)) &&
-        parseFloat(value) >= -90 &&
-        parseFloat(value) <= 90)
-    );
-  }),
 });
 
-export const AddLocation = () => {
-  const [open, setOpen] = useState(false);
+interface UpdateLocationProps {
+  location: LocationSchemaType | null;
+  onClose: () => void;
+}
+
+export const UpdateLocation = (props: UpdateLocationProps) => {
+  const { location, onClose } = props;
+
+  const updateLocation = useUpdateLocation();
 
   const methods = useForm({
     resolver: zodResolver(schema),
@@ -41,41 +36,54 @@ export const AddLocation = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    setValue,
+    formState: { errors, isSubmitting, touchedFields },
   } = methods;
 
+  useEffect(() => {
+    if (location === null) return;
+    setValue("_id", location._id);
+    setValue("name", location.name);
+    setValue("address", location.address ?? "");
+    setValue("city", location.city ?? "");
+    setValue("state", location.state ?? "");
+    setValue("zip", location.zip ?? "");
+    setValue("maximumDepth", location.maximumDepth?.metters.toString() ?? "");
+    setValue("lat", location.location.coordinates[0].toString());
+    setValue("long", location.location.coordinates[1].toString());
+  }, [location, setValue]);
+
+  console.log(errors);
+
   const onSubmit = handleSubmit((data) => {
-    API.location
-      .create({
-        name: data.name,
-        address: data.address,
-        city: data.city,
-        state: data.state,
-        zip: data.zip,
-        long: data.long,
-        lat: data.lat,
-      })
-      .then(() => {
-        setOpen(false);
-      })
-      .catch((error) => {
-        methods.setError("root", {
-          type: "server",
-          message: error.message,
-        });
-      });
+    if (location === null) return;
+
+    const changedFields = Object.keys(touchedFields);
+    if (changedFields.length === 0) {
+      return;
+    }
+
+    updateLocation.mutate(
+      {
+        ...data,
+        maximumDepth: {
+          metters: parseFloat(data.maximumDepth),
+          feet: parseFloat(data.maximumDepth) * 3.28084,
+        },
+        _id: location._id,
+      },
+      {
+        onSuccess: () => {
+          onClose();
+        },
+      }
+    );
   });
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="ml-6 inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-      >
-        New Location
-      </button>
-      <Transition.Root show={open} as={Fragment}>
-        <Dialog as="div" className="relative z-[60]" onClose={setOpen}>
+      <Transition.Root show={location !== null} as={Fragment}>
+        <Dialog as="div" className="relative z-[60]" onClose={onClose}>
           <Transition.Child
             as={Fragment}
             enter="ease-in-out duration-500"
@@ -105,13 +113,13 @@ export const AddLocation = () => {
                       <div className="px-4 sm:px-6">
                         <div className="flex items-start justify-between">
                           <Dialog.Title className="text-base font-semibold leading-6 text-gray-900">
-                            New Location
+                            Edit Location
                           </Dialog.Title>
                           <div className="ml-3 flex h-7 items-center">
                             <button
                               type="button"
                               className="relative rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                              onClick={() => setOpen(false)}
+                              onClick={onClose}
                             >
                               <span className="absolute -inset-2.5" />
                               <span className="sr-only">Close panel</span>
@@ -172,7 +180,7 @@ export const AddLocation = () => {
                               <div className="mt-2">
                                 <input
                                   {...register("long")}
-                                  type="number"
+                                  type="text"
                                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 disabled:ring-gray-200 sm:text-sm sm:leading-6"
                                   placeholder="36.8219"
                                 />
@@ -189,7 +197,7 @@ export const AddLocation = () => {
                               <div className="mt-2">
                                 <input
                                   {...register("lat")}
-                                  type="number"
+                                  type="text"
                                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 disabled:ring-gray-200 sm:text-sm sm:leading-6"
                                   placeholder="-1.2921"
                                 />
@@ -201,7 +209,7 @@ export const AddLocation = () => {
                                 htmlFor="maximumDepth"
                                 className="block text-sm font-medium leading-6 text-gray-900"
                               >
-                                Maximum Depth
+                                Maximum Depth (m)
                               </label>
                               <div className="mt-2">
                                 <input
@@ -264,28 +272,11 @@ export const AddLocation = () => {
                               </div>
                             </div>
 
-                            <div className="mt-6">
-                              <label
-                                htmlFor="country"
-                                className="block text-sm font-medium leading-6 text-gray-900"
-                              >
-                                Country
-                              </label>
-                              <div className="mt-2">
-                                <input
-                                  {...register("country")}
-                                  type="text"
-                                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 disabled:ring-gray-200 sm:text-sm sm:leading-6"
-                                  placeholder="Country"
-                                />
-                              </div>
-                            </div>
-
                             <div className="mt-6 flex items-center justify-end gap-x-6">
                               <button
                                 type="button"
                                 className="text-sm font-semibold leading-6 text-gray-900"
-                                onClick={() => setOpen(false)}
+                                onClick={onClose}
                               >
                                 Cancel
                               </button>

@@ -11,7 +11,8 @@ import { z } from "zod";
 
 import { Button } from "../components/Button";
 import { ROUTES } from "../config/routes";
-import { API } from "../services";
+import { API } from "../lib/ky";
+import { useAuthStore } from "../lib/zustand";
 
 const LoginSchema = z.object({
   email: z.string().email(),
@@ -26,6 +27,7 @@ const defaultValues = {
 export default function Login() {
   const [message, setMessage] = useState({ message: "", isError: false });
   const navigate = useNavigate();
+  const { setToken, setUser } = useAuthStore();
 
   const methods = useForm({
     resolver: zodResolver(LoginSchema),
@@ -45,8 +47,13 @@ export default function Login() {
         message: "Logged in successfully",
         isError: false,
       });
-      localStorage.setItem("token", res.token);
-      navigate(ROUTES.DASHBOARD);
+      setToken(res.token);
+      setUser(res.user);
+      if (res.user.isAdmin) {
+        navigate(ROUTES.ADMINISTRATION);
+      } else {
+        navigate(ROUTES.DASHBOARD);
+      }
     } catch (error) {
       if (error instanceof HTTPError) {
         error.response.json().then((data) => {

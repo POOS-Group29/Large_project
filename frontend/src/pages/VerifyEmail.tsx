@@ -8,7 +8,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { Button } from "../components/Button";
 import { ROUTES } from "../config/routes";
-import { API } from "../services";
+import { API } from "../lib/ky";
 
 export default function VerifyEmail() {
   const [searchParams] = useSearchParams();

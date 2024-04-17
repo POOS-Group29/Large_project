@@ -2,7 +2,7 @@ import { ChevronLeftIcon } from "@heroicons/react/20/solid";
 import type { LocationSchemaType } from "@xhoantran/common";
 import { useEffect, useState } from "react";
 
-import { API } from "../services";
+import { API } from "../lib/ky";
 import { Badge } from "./Badge";
 import ImageSlide from "./ImageSlide";
 import { Rating } from "./Rating";

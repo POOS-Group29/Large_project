@@ -11,7 +11,7 @@ import z from "zod";
 import { Button } from "../components/Button";
 import { PasswordRequirements } from "../components/PasswordRequirements";
 import { ROUTES } from "../config/routes";
-import { API } from "../services";
+import { API } from "../lib/ky";
 
 const RegisterSchema = z.object({
   email: z.string().email(),
