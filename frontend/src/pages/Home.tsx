@@ -47,6 +47,7 @@ export default function Home() {
         .list({
           long: pov.lng,
           lat: pov.lat,
+          name: "",
         })
         .then((data) =>
           setPointsData(data.map((location) => transformLocation(location)))
