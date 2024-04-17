@@ -32,13 +32,12 @@ export default function Home() {
   const [selectedPoint, setSelectedPoint] = useState<LocationSchemaType | null>(
     null
   );
-  const [selectedPointId, setSelectedPointId] = useState<string | null>(null);
-
   const [pov, setPov] = useState({
     lat: 0,
     lng: 0,
     altitude: 2.5,
   });
+  const [prevPov, setPrevPov] = useState(pov);
   const setPovDebounced = useDebounceCallback(setPov, 50);
   const globeRef = useRef<GlobeMethods | undefined>();
 
@@ -53,13 +52,29 @@ export default function Home() {
       );
   }, [pov]);
 
-  const handleCardClick = (pointId: string) => {
-    setSelectedPointId(pointId);
+  const onSelectedLocation = (location: LocationSchemaType) => {
+    setSelectedPoint(location);
+    setPrevPov(pov);
+    globeRef.current?.pointOfView(
+      {
+        lat: ((location.location.coordinates[1] - 2 + 90) % 180) - 90,
+        lng: ((location.location.coordinates[0] + 8 + 180) % 360) - 180,
+        altitude: 0.75,
+      },
+      1000
+    );
+  };
+
+  const onDeselectLocation = () => {
+    setSelectedPoint(null);
+    globeRef.current?.pointOfView(prevPov, 1000);
   };
 
   return (
     <>
-      <Dashboard onSelectedLocation={(location) => setSelectedPoint(location)}>
+      <Dashboard
+        onSelectedLocation={(location) => onSelectedLocation(location)}
+      >
         <div className="relative h-full w-full overflow-hidden">
           {/* Removed transition mobile code */}
 
@@ -72,17 +87,13 @@ export default function Home() {
                   {selectedPoint ? (
                     <LocationDetail
                       id={selectedPoint._id}
-                      onClickBack={() => setSelectedPoint(null)}
-                      globeRef={globeRef}
-                      resetPointColor={() => setSelectedPointId(null)} // Pass the resetPointColor function
+                      onClickBack={() => onDeselectLocation()}
                     />
                   ) : (
                     <>
                       {pointsData.map((point, index) => (
                         <Card
-                          globeRef={globeRef}
-                          onClick={() => setSelectedPoint(point)}
-                          onCardClick={handleCardClick} // Pass onCardClick callback
+                          onClick={() => onSelectedLocation(point)}
                           key={index}
                           location={point}
                         />
@@ -110,18 +121,18 @@ export default function Home() {
                   ref={globeRef}
                   pointsData={pointsData}
                   onPointClick={(point) =>
-                    setSelectedPoint(point as LocationSchemaType)
+                    onSelectedLocation(point as LocationSchemaType)
                   }
                   globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
                   backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
                   onZoom={(newPov) => setPovDebounced(newPov)}
                   pointAltitude={(point) =>
                     // @ts-expect-error _id is in LocationSchemaType
-                    point._id === selectedPointId ? 0.3 : 0.1
+                    point._id === selectedPoint?._id ? 0.3 : 0.1
                   }
                   pointColor={(point) =>
                     // @ts-expect-error _id is in LocationSchemaType
-                    point._id === selectedPointId ? "red" : "#ffffaa"
+                    point._id === selectedPoint?._id ? "red" : "#ffffaa"
                   }
                 />
               </div>
