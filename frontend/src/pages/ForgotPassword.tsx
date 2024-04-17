@@ -58,7 +58,7 @@ export default function ForgotPassword() {
               <img
                 className="h-10 w-auto"
                 src="/scubadiver.jpeg"
-                alt="Your Company"
+                alt="Scuparadise"
               />
               <h2 className="mt-8 text-2xl font-bold leading-9 tracking-tight text-gray-900">
                 Forgot your password?

@@ -87,7 +87,7 @@ export default function Register() {
               <img
                 className="h-16 w-auto"
                 src="/scubadiver.jpeg"
-                alt="Your Company"
+                alt="Scuparadise"
               />
               <h2 className="mt-8 text-2xl font-bold leading-9 tracking-tight text-gray-900">
                 Register for an account
