@@ -72,7 +72,18 @@ LocationRoutes.get("/", async (req, res) => {
 
 // Create a new location
 LocationRoutes.post("/", async (req, res) => {
-  const { name, address, city, state, zip, lat, long } = req.body;
+  const {
+    name,
+    address,
+    city,
+    state,
+    zip,
+    country,
+    lat,
+    long,
+    marineLife,
+    types,
+  } = req.body;
   try {
     const location = new Location({
       name,
@@ -80,6 +91,9 @@ LocationRoutes.post("/", async (req, res) => {
       city,
       state,
       zip,
+      country,
+      marineLife,
+      types,
       location: {
         type: "Point",
         coordinates: [parseFloat(lat), parseFloat(long)],
