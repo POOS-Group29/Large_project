@@ -87,6 +87,7 @@ const diveSitesTransformed = diveSites.map((site) => {
     city: null,
     state: null,
     country: null,
+    approved: true,
   });
 });
 
