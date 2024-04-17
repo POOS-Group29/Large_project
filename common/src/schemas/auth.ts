@@ -4,6 +4,7 @@ export const UserSchema = z.object({
   _id: z.string(),
   email: z.string(),
   name: z.string(),
+  isAdmin: z.boolean(),
 });
 
 export type UserSchemaType = z.infer<typeof UserSchema>;
