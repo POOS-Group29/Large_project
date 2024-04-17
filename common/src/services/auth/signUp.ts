@@ -1,5 +1,5 @@
 import type { SignUpRequestSchemaType } from "@/schemas/auth";
-import { AuthResponseSchema } from "@/schemas/auth";
+import { ResponseMessageSchema } from "@/schemas/response";
 import { KyInstance } from "ky";
 
 export default (instance: KyInstance) =>
@@ -10,5 +10,5 @@ export default (instance: KyInstance) =>
         body: JSON.stringify({ email, password, name }),
       })
       .json();
-    return AuthResponseSchema.parse(response);
+    return ResponseMessageSchema.parse(response);
   };
