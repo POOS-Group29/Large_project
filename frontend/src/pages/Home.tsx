@@ -110,16 +110,8 @@ export default function Home() {
           </div>
 
           <div className="lg:pl-96">
-            <main className="py-10">
-              <div
-                className="px-4 sm:px-6 lg:px-8"
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginTop: "-100px",
-                }}
-              >
+            <main>
+              <div className="px-4 sm:px-6 lg:px-8 flex justify-center items-center">
                 <Globe
                   ref={globeRef}
                   pointsData={pointsData}
