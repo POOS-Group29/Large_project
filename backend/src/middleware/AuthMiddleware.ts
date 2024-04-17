@@ -28,3 +28,17 @@ export const authMiddleware = async (req: any, res: any, next: any) => {
     res.json({ message: "Not authorized" });
   }
 };
+
+export const adminMiddleware = async (req: any, res: any, next: any) => {
+  if (!req.user) {
+    res.status(401);
+    return res.json({ message: "Not authorized" });
+  }
+
+  if (req.user.isAdmin !== true) {
+    res.status(403);
+    return res.json({ message: "Forbidden" });
+  }
+
+  next();
+};

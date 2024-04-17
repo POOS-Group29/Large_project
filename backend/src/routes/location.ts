@@ -1,6 +1,7 @@
 import express from "express";
 
 import logger from "../config/winston";
+import { adminMiddleware } from "../middleware/AuthMiddleware";
 import Location from "../model/Location";
 import { DifficultyRating } from "../model/Rating";
 
@@ -22,6 +23,20 @@ LocationRoutes.get("/search", async (req, res) => {
     logger.error(error);
     return res.status(500).json({ message: "Error fetching locations" });
   }
+});
+
+LocationRoutes.get("/pending", adminMiddleware, async (req, res) => {
+  const locations = await Location.find({ approved: false }).limit(10);
+  res.json(locations);
+});
+
+LocationRoutes.put("/approve/:id", adminMiddleware, async (req, res) => {
+  const { id } = req.params;
+  const location = await Location.findByIdAndUpdate(
+    id,
+    { approved: true },
+  );
+  res.json(location);
 });
 
 // List all locations near a given latitude and longitude
@@ -46,6 +61,7 @@ LocationRoutes.get("/", async (req, res) => {
           },
         },
       },
+      approved: true,
     })
       .skip((parseInt(page as string) - 1) * 10)
       .limit(100);
@@ -70,6 +86,8 @@ LocationRoutes.post("/", async (req, res) => {
         type: "Point",
         coordinates: [parseFloat(lat), parseFloat(long)],
       },
+      // @ts-expect-error User ID is injected by the middleware
+      approved: req.user.isAdmin,
     });
     await location.save();
     return res.json(location);
@@ -100,7 +118,7 @@ LocationRoutes.get("/:id", async (req, res) => {
 });
 
 // Update a location
-LocationRoutes.put("/:id", async (req, res) => {
+LocationRoutes.put("/:id", adminMiddleware, async (req, res) => {
   const { id } = req.params;
   const { name, address, city, state, zip, lat, long } = req.body;
   const location = await Location.findByIdAndUpdate(
@@ -122,7 +140,7 @@ LocationRoutes.put("/:id", async (req, res) => {
 });
 
 // Delete a location
-LocationRoutes.delete("/:id", async (req, res) => {
+LocationRoutes.delete("/:id", adminMiddleware, async (req, res) => {
   const { id } = req.params;
   await Location.findByIdAndDelete(id);
   res.json({ message: "Location deleted" });

@@ -20,6 +20,7 @@ interface ILocation extends Document {
   } | null;
   difficultyRateCount: number;
   difficultyRateValue: number;
+  approved: boolean;
 }
 
 const locationSchema = new Schema<ILocation>(
@@ -84,6 +85,10 @@ const locationSchema = new Schema<ILocation>(
     difficultyRateValue: {
       type: Number,
       default: 0,
+    },
+    approved: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
