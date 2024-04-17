@@ -1,28 +1,22 @@
-import { Menu, Popover, Transition } from "@headlessui/react";
+import { Popover } from "@headlessui/react";
 import { MagnifyingGlassIcon, UserCircleIcon } from "@heroicons/react/20/solid";
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowRightEndOnRectangleIcon,
+  Bars3Icon,
+  BellIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { LocationSchemaType } from "@xhoantran/common";
 import clsx from "clsx";
 import { HTTPError } from "ky";
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDebounceValue, useOnClickOutside } from "usehooks-ts";
 
+import { useNavigate } from "react-router-dom";
 import { AddLocation } from "../components/AddLocation";
 import { ROUTES } from "../config/routes";
 import { API } from "../lib/ky";
 import { useAuthStore } from "../lib/zustand";
-
-const userNavigation = [
-  { name: "Your Profile", onClick: () => {} },
-  { name: "Settings", onClick: () => {} },
-  {
-    name: "Sign out",
-    onClick: () => {
-      localStorage.removeItem("token");
-      window.location.href = ROUTES.SIGN_IN;
-    },
-  },
-];
 
 interface DashboardProps extends React.PropsWithChildren<object> {
   onSelectedLocation?: (location: LocationSchemaType) => void;
@@ -30,8 +24,9 @@ interface DashboardProps extends React.PropsWithChildren<object> {
 
 export default function Dashboard(props: DashboardProps) {
   const { children } = props;
+  const navigate = useNavigate();
 
-  const { user, setUser } = useAuthStore();
+  const { user, setUser, setToken } = useAuthStore();
 
   const searchRef = useRef<HTMLInputElement>(null);
   const [search, setSearch] = useState("");
@@ -192,46 +187,14 @@ export default function Dashboard(props: DashboardProps) {
                   </div>
                   <div className="hidden lg:flex lg:items-center lg:justify-end xl:col-span-4">
                     {/* Profile dropdown */}
-                    <Menu as="div" className="relative ml-5 flex-shrink-0">
-                      <div>
-                        <Menu.Button className="relative flex rounded-full bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                          <span className="absolute -inset-1.5" />
-                          <span className="sr-only">Open user menu</span>
-                          <UserCircleIcon
-                            className="h-8 w-8 rounded-full text-gray-400"
-                            aria-hidden="true"
-                          />
-                        </Menu.Button>
-                      </div>
-                      <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-100"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95"
-                      >
-                        <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          {userNavigation.map((item) => (
-                            <Menu.Item key={item.name}>
-                              {({ active }) => (
-                                <a
-                                  onClick={item.onClick}
-                                  className={clsx(
-                                    active ? "bg-gray-100" : "",
-                                    "block px-4 py-2 text-sm text-gray-700"
-                                  )}
-                                >
-                                  {item.name}
-                                </a>
-                              )}
-                            </Menu.Item>
-                          ))}
-                        </Menu.Items>
-                      </Transition>
-                    </Menu>
-
+                    <ArrowRightEndOnRectangleIcon
+                      className="h-6 w-6 text-gray-700 cursor-pointer"
+                      onClick={() => {
+                        setToken("");
+                        setUser(null);
+                        navigate(ROUTES.SIGN_IN);
+                      }}
+                    />
                     <AddLocation />
                   </div>
                 </div>
@@ -264,15 +227,15 @@ export default function Dashboard(props: DashboardProps) {
                     </button>
                   </div>
                   <div className="mx-auto mt-3 max-w-3xl space-y-1 px-2 sm:px-4">
-                    {userNavigation.map((item) => (
-                      <a
-                        key={item.name}
-                        onClick={item.onClick}
-                        className="block rounded-md px-3 py-2 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-                      >
-                        {item.name}
-                      </a>
-                    ))}
+                    <ArrowRightEndOnRectangleIcon
+                      className="h-6 w-6 text-gray-700 cursor-pointer"
+                      onClick={() => {
+                        setToken("");
+                        setUser(null);
+                        navigate(ROUTES.SIGN_IN);
+                      }}
+                    />
+                    <AddLocation />
                   </div>
                 </div>
               </Popover.Panel>

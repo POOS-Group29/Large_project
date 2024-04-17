@@ -9,9 +9,9 @@ export interface ListLocationProps {
 }
 
 export default (instance: KyInstance) => async (props: ListLocationProps) => {
-  const { long, lat, page, name } = props;
+  const { long, lat, page = 1, name = "" } = props;
   const response = await instance
-    .get(`location/?long=${long}&lat=${lat}&page=${page || 1}&name=${name}`)
+    .get(`location/?long=${long}&lat=${lat}&page=${page}&name=${name}`)
     .json();
   return LocationListSchema.parse(response);
 };
