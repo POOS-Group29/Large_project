@@ -81,6 +81,7 @@ LocationRoutes.post("/", async (req, res) => {
     country,
     lat,
     long,
+    maximumDepth,
     marineLife,
     types,
   } = req.body;
@@ -94,6 +95,7 @@ LocationRoutes.post("/", async (req, res) => {
       country,
       marineLife,
       types,
+      maximumDepth,
       location: {
         type: "Point",
         coordinates: [parseFloat(lat), parseFloat(long)],

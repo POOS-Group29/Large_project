@@ -7,6 +7,13 @@ export const LocationMutationSchema = z.object({
   city: z.string().nullish(),
   state: z.string().nullish(),
   zip: z.string().nullish(),
+  country: z.string().nullish(),
+  maximumDepth: z
+    .object({
+      metters: z.number(),
+      feet: z.number(),
+    })
+    .nullish(),
   marineLife: z.array(z.string()).nullish(),
   types: z.array(z.string()).nullish(),
   long: z.number(),
