@@ -41,7 +41,7 @@ LocationRoutes.put("/approve/:id", adminMiddleware, async (req, res) => {
 
 // List all locations near a given latitude and longitude
 LocationRoutes.get("/", async (req, res) => {
-  const { lat, long, page } = req.query;
+  const { lat, long, page, name } = req.query;
   if (!lat || !long) {
     logger.error("Latitude and longitude are required");
     return res
@@ -61,6 +61,7 @@ LocationRoutes.get("/", async (req, res) => {
           },
         },
       },
+      name: { $regex: new RegExp(name as string, "i") },
       approved: true,
     })
       .skip((parseInt(page as string) - 1) * 10)
