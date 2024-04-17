@@ -21,7 +21,6 @@ const LocationDetails = ({location}) => {
         <View style={styles.container}>
             
             <Text style={styles.headerText}>{location?.name}</Text>
-            {/* <Text style={styles.subText}>{location?.address}</Text> */}
 
             <View style={styles.ratingContainer}>
                 <Rating size={17} rating={calculateRating(location?.difficultyRateValue, location.difficultyRateCount)} disabled />

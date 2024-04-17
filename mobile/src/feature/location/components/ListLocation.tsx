@@ -1,13 +1,14 @@
 import { useTheme } from '@/theme';
 import type { LocationSchemaType } from '@/types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
 	Pressable,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
 	View,
-	Image
+	Image,
+	TextInput
 } from 'react-native';
 import { CreateLocation } from './CreateLocation';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -15,16 +16,34 @@ import { generateBorderColors, staticBorderStyles } from '@/theme/borders';
 import { Rating } from '@kolking/react-native-rating';
 import { Button } from '@/components/Button';
 import { useNavigation } from '@react-navigation/native';
-// import { SearchBar } from 'react-native-elements';
-import SearchBar from '../../../components/SearchBar/SearchBar'; // Import the SearchBar component using default import syntax
+import { useSearchLocation } from '../api/search';
+import { set } from 'zod';
+import { use } from 'i18next';
 
 interface ListLocationProps {
 	locations: LocationSchemaType[];
 }
-
+var firstLoad = true;
 export function ListLocation(props: ListLocationProps) {
 	const { borders, gutters } = useTheme();
 	const { locations } = props;
+	const [searchQuery, setSearchQuery] = useState('');
+	const [listLocation, setListLocation] = useState<LocationSchemaType[]>(locations);
+	const { data, error, isLoading, refetch } = useSearchLocation({name: searchQuery});
+
+	useEffect(() => {
+		if (!isLoading && data){
+			setListLocation(data);
+			firstLoad = false;
+		}
+	}, [isLoading, data]);
+
+	useEffect(() => {
+		refetch();
+	}, [searchQuery]);
+
+	console.log(listLocation)
+
 	const [selectedLocation, setSelectedLocation] =
 		useState<LocationSchemaType | null>(null);
 	
@@ -32,18 +51,21 @@ export function ListLocation(props: ListLocationProps) {
 		return count === 0 ? 0 : sum/count;
 	
 	}
-	const searchQuery = (query) => {
-        console.log("Searching for:", query);
-        // Implement search logic here, such as filtering data
-    };
 	const navigation = useNavigation();
 	return (
 		<View style={[styles.container]}>
 
-			<SearchBar onSearch={searchQuery} />
-
+		<View style={styles.searchContainer}>
+            <TextInput
+                style={styles.input}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder="Search..."
+                clearButtonMode="while-editing"
+            />
+        </View>
 			<ScrollView style={styles.scrollView}>
-				{ locations.map((location, index) => (
+				{ listLocation && listLocation.map((location, index) => (
 					<View
 						style={styles.slideView}
 						key={index}
@@ -127,6 +149,16 @@ const styles = StyleSheet.create({
 	  },
 	  imageContainer: {
 		
-	  }
+	  },
+	  searchContainer: {
+        padding: 10,
+        backgroundColor: '#fff',
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 20,
+    },
+    input: {
+        fontSize: 16
+    }
 	
 });

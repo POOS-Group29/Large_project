@@ -25,7 +25,7 @@ const RetrieveLocation = ({onRatingSubmit,currentRating, location}) => {
             }, {
                 onSuccess: () => {
                     Alert.alert('Rating submitted!');
-                    onRatingSubmit(rating); // Notify parent component
+                    onRatingSubmit(rating);
                 }
             });
             
@@ -36,7 +36,7 @@ const RetrieveLocation = ({onRatingSubmit,currentRating, location}) => {
             }, {
                 onSuccess: () => {
                     Alert.alert('Rating updated!');
-                    onRatingSubmit(rating); // Notify parent component
+                    onRatingSubmit(rating); 
                 }
             });
         }

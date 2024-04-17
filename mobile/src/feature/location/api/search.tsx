@@ -14,7 +14,7 @@ export const useSearchLocation = ({
   return useQuery({
     ...config,
     queryKey: ['location-search', name],
-    queryFn: () => API.location.search(name),
+    queryFn: () => API.location.search({name}), // Fix: Pass an object with the name property
     onSuccess: () => {
       console.log('Location search completed successfully');
     },

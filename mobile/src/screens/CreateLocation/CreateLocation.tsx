@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Alert, KeyboardAvoidingView } from 'react-native';
 import { Button } from '@/components/Button';
 import { useCreateLocation, UseCreateLocationOptions } from '../../feature/location/api/create';
 import { useNavigation } from '@react-navigation/native';
@@ -72,7 +72,7 @@ const validateInputs = () => {
 			},
 			onError: (error) => {
 				console.log(error)
-				Alert.alert('Failed to create location: ' + error.message)
+				Alert.alert('Error Creating Location')
 			},
 		});
 	}
@@ -80,79 +80,87 @@ const validateInputs = () => {
 
 const createLocation = useCreateLocation();
 
-return (
-    <View style={styles.container}>
-		<ScrollView>
-			{/* Name Input */}
-			<Text style={styles.label}>Name</Text>
-			<TextInput
-				style={styles.input}
-				value={name}
-				placeholder='Name'
-				onChangeText={setName}
-			/>
+return (		
+	<KeyboardAvoidingView 
+		style={styles.container} 
+		behavior={Platform.OS === "ios" ? "padding" : "height"}
+		keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+	>
+		<View style={styles.container}>
 
-			{/* Address Input */}
-			<Text style={styles.label}>Address</Text>
-			<TextInput
-				style={styles.input}
-				value={address}
-				placeholder='Address'
-				onChangeText={setAddress}
-			/>
+						<ScrollView>
+				{/* Name Input */}
+				<Text style={styles.label}>Name</Text>
+				<TextInput
+					style={styles.input}
+					value={name}
+					placeholder='Name'
+					onChangeText={setName}
+				/>
 
-			{/* City Input */}
-			<Text style={styles.label}>City</Text>
-			<TextInput
-				style={styles.input}
-				value={city}
-				placeholder='City'
-				onChangeText={setCity}
-			/>
+				{/* Address Input */}
+				<Text style={styles.label}>Address</Text>
+				<TextInput
+					style={styles.input}
+					value={address}
+					placeholder='Address'
+					onChangeText={setAddress}
+				/>
 
-			{/* State Input */}
-			<Text style={styles.label}>State</Text>
-			<TextInput
-				style={styles.input}
-				value={state}
-				placeholder='State'
-				onChangeText={setState}
-			/>
+				{/* City Input */}
+				<Text style={styles.label}>City</Text>
+				<TextInput
+					style={styles.input}
+					value={city}
+					placeholder='City'
+					onChangeText={setCity}
+				/>
 
-			{/* Zip Code Input */}
-			<Text style={styles.label}>Zip Code</Text>
-			<TextInput
-				style={styles.input}
-				value={zip}
-				placeholder='Zip Code'
-				onChangeText={setZip}
-				keyboardType="numeric"
-			/>
+				{/* State Input */}
+				<Text style={styles.label}>State</Text>
+				<TextInput
+					style={styles.input}
+					value={state}
+					placeholder='State'
+					onChangeText={setState}
+				/>
 
-			{/* Latitude Input */}
-			<Text style={styles.label}>Latitude</Text>
-			<TextInput
-				style={styles.input}
-				value={latitude}
-				placeholder='Latitude'
-				onChangeText={setLatitude}
-				keyboardType="numeric"
-			/>
+				{/* Zip Code Input */}
+				<Text style={styles.label}>Zip Code</Text>
+				<TextInput
+					style={styles.input}
+					value={zip}
+					placeholder='Zip Code'
+					onChangeText={setZip}
+					keyboardType="numeric"
+				/>
 
-			{/* Longitude Input */}
-			<Text style={styles.label}>Longitude</Text>
-			<TextInput
-				style={styles.input}
-				value={longitude}
-				placeholder='Longitude'
-				onChangeText={setLongitude}
-				keyboardType="numeric"
-			/>
+				{/* Latitude Input */}
+				<Text style={styles.label}>Latitude</Text>
+				<TextInput
+					style={styles.input}
+					value={latitude}
+					placeholder='Latitude'
+					onChangeText={setLatitude}
+					keyboardType="numeric"
+				/>
 
-			{/* Submit Button */}
-			<Button title="Submit" onPress={handleSubmit} />
-		</ScrollView>
-    </View>
+				{/* Longitude Input */}
+				<Text style={styles.label}>Longitude</Text>
+				<TextInput
+					style={styles.input}
+					value={longitude}
+					placeholder='Longitude'
+					onChangeText={setLongitude}
+					keyboardType="numeric"
+				/>
+
+				{/* Submit Button */}
+				<Button title="Submit" onPress={handleSubmit} />
+			</ScrollView>
+			
+		</View>
+	</KeyboardAvoidingView>
   );
 };
 
