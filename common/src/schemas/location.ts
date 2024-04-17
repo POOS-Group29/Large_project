@@ -7,6 +7,8 @@ export const LocationMutationSchema = z.object({
   city: z.string().nullish(),
   state: z.string().nullish(),
   zip: z.string().nullish(),
+  marineLife: z.array(z.string()).nullish(),
+  types: z.array(z.string()).nullish(),
   long: z.number(),
   lat: z.number(),
 });
