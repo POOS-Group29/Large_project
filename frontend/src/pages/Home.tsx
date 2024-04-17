@@ -42,6 +42,7 @@ export default function Home() {
   const globeRef = useRef<GlobeMethods | undefined>();
 
   useEffect(() => {
+    console.log(pov, prevPov, selectedPoint)
     if (selectedPoint === null || pov === prevPov) {
       console.log("fetching data");
       API.location
@@ -53,6 +54,7 @@ export default function Home() {
           setPointsData(data.map((location) => transformLocation(location)))
         );
     }
+    console.log("fetching data end");
   }, [pov, selectedPoint, prevPov]);
 
   const onSelectedLocation = (location: LocationSchemaType) => {
