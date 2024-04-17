@@ -30,7 +30,7 @@ LocationRoutes.get("/pending", adminMiddleware, async (req, res) => {
   res.json(locations);
 });
 
-LocationRoutes.put("/approve/:id", adminMiddleware, async (req, res) => {
+LocationRoutes.post("/approve/:id", adminMiddleware, async (req, res) => {
   const { id } = req.params;
   const location = await Location.findByIdAndUpdate(id, { approved: true });
   res.json(location);
