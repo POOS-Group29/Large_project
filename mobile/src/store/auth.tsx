@@ -1,14 +1,14 @@
+import type { AuthResponseSchemaType } from '@/types/schemas/auth';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import type { AuthResponseSchemaType } from '@/types/schemas/auth';
 import { mmkvZustandStorage } from './instance';
 
 interface AuthStorage {
 	user: AuthResponseSchemaType['user'] | null;
 	token: AuthResponseSchemaType['token'] | null;
 	isAuthorized: boolean;
-	setUser: (user: AuthResponseSchemaType['user']) => void;
-	setToken: (token: AuthResponseSchemaType['token']) => void;
+	setUser: (user: AuthResponseSchemaType['user'] | null) => void;
+	setToken: (token: AuthResponseSchemaType['token'] | null) => void;
 	setIsAuthorized: (isAuthorized: boolean) => void;
 }
 

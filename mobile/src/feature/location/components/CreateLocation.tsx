@@ -1,15 +1,24 @@
 import { Button } from '@/components/Button';
-import { View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { StyleSheet, View } from 'react-native';
+
+const styles = StyleSheet.create({
+	createButton: {
+		width: '15%',
+		position: 'absolute',
+        bottom: 20,
+        right: 20,
+	},
+})
 
 export function CreateLocation() {
 	const navigation = useNavigation();
 	return (
-		<View style={{ marginTop: 10 }}>
+		<View style = {styles.createButton}>
 			<Button
 				buttonStyle={[]}
-				title="Create Location"
-				onPress={() => navigation.navigate('CreateLocation')}
+				title="Add"
+				onPress={() => navigation.navigate('CreateLocation') }
 			/>
 		</View>
 	);
