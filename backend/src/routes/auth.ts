@@ -2,7 +2,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { sendVerificationMail } from "mail/sendVerificationMail";
 import { AuthConfig } from "../config/AuthConfig";
-import { awsTransporter, mailgunTransporter, sendFromEmail } from "../config/nodemailer";
+import { mailgunTransporter, sendFromEmail } from "../config/nodemailer";
 import logger from "../config/winston";
 import { authMiddleware } from "../middleware/AuthMiddleware";
 import User from "../model/User";
@@ -173,23 +173,13 @@ AuthRoutes.post("/forgot-password", async (req, res) => {
       text: ResetPassword(user.name, token),
     };
 
-    if (email === "xhoantran@gmail.com") {
-      awsTransporter.sendMail(mailOptions, (err, info) => {
-        if (err) {
-          logger.error(`Error sending verification email to ${email}: ${err}`);
-        } else {
-          logger.info(`Verification email sent to ${email}: ${info.response}`);
-        }
-      });
-    } else {
-      mailgunTransporter.sendMail(mailOptions, (err, info) => {
-        if (err) {
-          logger.error(`Error sending verification email to ${email}: ${err}`);
-        } else {
-          logger.info(`Verification email sent to ${email}: ${info.response}`);
-        }
-      });
-    }
+    mailgunTransporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        logger.error(`Error sending verification email to ${email}: ${err}`);
+      } else {
+        logger.info(`Verification email sent to ${email}: ${info.response}`);
+      }
+    });
   }
 
   return res.json({
