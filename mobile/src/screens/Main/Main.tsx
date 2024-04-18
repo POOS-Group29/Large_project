@@ -19,6 +19,8 @@ import { useTheme } from '@/theme';
 export default function Main() {
 	const { layout } = useTheme();
 
+	const mapViewRef = useRef<MapView>(null);
+
 	const [keyboardHeight, setKeyboardHeight] = useState(0);
 
 	useEffect(() => {
@@ -52,8 +54,8 @@ export default function Main() {
 	const [currentPosition, setCurrentPosition] = useState({
 		latitude: 0,
 		longitude: 0,
-		latitudeDelta: 0.01,
-		longitudeDelta: 0.01,
+		latitudeDelta: 2,
+		longitudeDelta: 2,
 	});
 
 	const locateCurrentPosition = () => {
@@ -65,6 +67,12 @@ export default function Main() {
 					latitude,
 					longitude,
 				});
+				mapViewRef.current?.animateToRegion({
+					latitude,
+					longitude,
+					latitudeDelta: 2,
+					longitudeDelta: 2,
+				});
 			},
 			(error: GeolocationError) => console.log(error),
 			{ enableHighAccuracy: true, timeout: 10000, maximumAge: 1000 },
@@ -75,13 +83,12 @@ export default function Main() {
 		if (Platform.OS === 'ios') {
 			Geolocation.requestAuthorization(
 				() => {
-					console.log('Success');
+					locateCurrentPosition();
 				},
 				() => {
 					console.log('Failed');
 				},
 			);
-			locateCurrentPosition();
 		} else {
 			const granted = await PermissionsAndroid.request(
 				PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
@@ -120,6 +127,7 @@ export default function Main() {
 	return (
 		<View>
 			<MapView
+				ref={mapViewRef}
 				style={[layout.fullHeight, layout.fullWidth]}
 				onRegionChange={region => debouncedSetCurrentRegion(region)}
 				mapType="satelliteFlyover"

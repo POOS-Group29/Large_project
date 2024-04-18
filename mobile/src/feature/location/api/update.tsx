@@ -1,30 +1,22 @@
-// api/updateLocation.tsx
 import { API } from '@/lib/common';
 import { MutationConfig, queryClient } from '@/lib/react-query';
 import { useMutation } from '@tanstack/react-query';
+import { Alert } from 'react-native';
 
-export type UseUpdateLocationOptions = {
+export type UseUpdateRatingOptions = {
 	config?: MutationConfig<typeof API.rating.update>;
 };
 
-export const useUpdateLocation = ({
-	config,
-}: UseUpdateLocationOptions = {}) => {
+export const useUpdateRating = ({ config }: UseUpdateRatingOptions = {}) => {
 	return useMutation({
 		...config,
-		mutationKey: ['updateLocation'],
+		mutationKey: ['location'],
 		mutationFn: updateData => API.rating.update(updateData),
 		onSuccess: () => {
-			// Optionally, invalidate queries related to the location data
-			// For example, if updating the location affects any queries with 'location' as part of their keys
-			void queryClient.invalidateQueries({
-				queryKey: ['location'],
-			});
-
-			console.log('Location data updated successfully');
+			void queryClient.invalidateQueries();
 		},
 		onError: error => {
-			console.error('Error updating location:', error);
+			Alert.alert('Error', error.message);
 		},
 	});
 };
