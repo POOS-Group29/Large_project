@@ -1,9 +1,10 @@
 import getCommonAPI from "@xhoantran/common";
 import ky from "ky";
+import { useAuthStore } from "../lib/zustand";
 
 export const CommonAPI = getCommonAPI({
   prefixUrl: import.meta.env.VITE_API_BASE_URL || "",
-  getAuthToken: () => localStorage.getItem("token") || "",
+  getAuthToken: () => useAuthStore.getState().token || "",
 });
 
 export const baseInstance = ky.create({
@@ -17,7 +18,7 @@ export const authInstance = baseInstance.extend({
   hooks: {
     beforeRequest: [
       async (request) => {
-        const token = localStorage.getItem("token");
+        const token = useAuthStore.getState().token;
         if (token) {
           request.headers.set("Authorization", `Bearer ${token}`);
         }

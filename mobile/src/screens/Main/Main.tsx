@@ -8,7 +8,6 @@ import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { useIsFocused } from '@react-navigation/native';
 import Geolocation from '@react-native-community/geolocation';
 import { ListLocation } from '@/feature/location/components/ListLocation';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useAuthStorage } from '@/store/auth';
 import { CreateLocation } from '@/feature/location/components/CreateLocation';
 import DrawerProfile from '@/components/Drawer/DrawerProfile';
@@ -108,7 +107,7 @@ export default function Main() {
 		lat: currentRegion.latitude,
 		long: currentRegion.longitude,
 	});
-	
+
 	const { setUser, setIsAuthorized, setToken } = useAuthStorage();
 
 	useEffect(() => {
@@ -178,10 +177,10 @@ export default function Main() {
 			paddingVertical: 8,
 			paddingHorizontal: 12,
 			backgroundColor: 'grey',
-			position: 'absolute', 
-			top:20, 
-			right:0, 
-			padding: 10, 
+			position: 'absolute',
+			top: 20,
+			right: 0,
+			padding: 10,
 			borderRadius: 20,
 		},
 		logoutButtonText: {

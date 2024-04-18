@@ -4,7 +4,10 @@ import {
 } from "@heroicons/react/20/solid";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import { baseInstance } from "../config/ky";
+import { ROUTES } from "../config/routes";
+import { PasswordRequirements } from "../components/PasswordRequirements";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
@@ -18,20 +21,6 @@ export default function ResetPassword() {
   const token = new URLSearchParams(window.location.search).get("token");
 
   useEffect(() => {
-    if (newPassword !== confirmPassword) {
-      setMessage({
-        message: "Passwords do not match",
-        isError: true,
-      });
-    } else {
-      setMessage({
-        message: "",
-        isError: false,
-      });
-    }
-  }, [newPassword, confirmPassword]);
-
-  useEffect(() => {
     if (redirect) {
       let count = 3;
       setInterval(() => {
@@ -41,7 +30,7 @@ export default function ResetPassword() {
         });
         count--;
         if (count < 0) {
-          navigate("/auth/signin");
+          navigate(ROUTES.SIGN_IN);
         }
       }, 1000);
     }
@@ -176,6 +165,17 @@ export default function ResetPassword() {
                 />
               </div>
             </div>
+
+            <PasswordRequirements
+              password={newPassword}
+              extraRequirements={[
+                {
+                  text: "Confirmation password must match new password",
+                  validate: (password: string) => password === confirmPassword,
+                },
+              ]}
+              isDirty={newPassword.length > 0 ? true : undefined}
+            />
 
             <div>
               <button

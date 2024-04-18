@@ -1,24 +1,18 @@
 import { useTheme } from '@/theme';
 import type { LocationSchemaType } from '@/types';
+import { Rating } from '@kolking/react-native-rating';
+import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
-	Pressable,
-	StyleSheet,
-	Text,
-	TouchableOpacity,
-	View,
-	Image,
-	TextInput
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
 } from 'react-native';
-import { CreateLocation } from './CreateLocation';
 import { ScrollView } from 'react-native-gesture-handler';
-import { generateBorderColors, staticBorderStyles } from '@/theme/borders';
-import { Rating } from '@kolking/react-native-rating';
-import { Button } from '@/components/Button';
-import { useNavigation } from '@react-navigation/native';
 import { useSearchLocation } from '../api/search';
-import { set } from 'zod';
-import { use } from 'i18next';
 
 interface ListLocationProps {
 	locations: LocationSchemaType[];
@@ -116,11 +110,11 @@ const styles = StyleSheet.create({
 	},
 	scrollView: {
 		top: '5%',
-		width: '100%',  // Use full width of the screen
-		backgroundColor: '#ffffff',  // Light background color for the list
+		width: '100%', // Use full width of the screen
+		backgroundColor: '#ffffff', // Light background color for the list
 	},
 	slideView: {
-		backgroundColor: '#ffffff',  // White background for each item
+		backgroundColor: '#ffffff', // White background for each item
 		borderWidth: 1,
 		borderColor: '#e0e0e0',  // Lighter border color
 		borderRadius: 20,  // Rounded corners

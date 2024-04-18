@@ -1,6 +1,6 @@
 import { Button } from '@/components/Button';
-import { View, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { StyleSheet, View } from 'react-native';
 
 const styles = StyleSheet.create({
 	createButton: {

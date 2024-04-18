@@ -1,69 +1,79 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert, KeyboardAvoidingView } from 'react-native';
 import { Button } from '@/components/Button';
-import { useCreateLocation, UseCreateLocationOptions } from '../../feature/location/api/create';
 import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { Alert, KeyboardAvoidingView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import {
+  useCreateLocation
+} from '../../feature/location/api/create';
 
-const CreateLocation = () => {
-  const [name, setName] = useState('');
+function CreateLocation() {
+	const [name, setName] = useState('');
 
+	const [address, setAddress] = useState('');
+	const [city, setCity] = useState('');
+	const [state, setState] = useState('');
+	const [zip, setZip] = useState('');
+	const [latitude, setLatitude] = useState('');
+	const [longitude, setLongitude] = useState('');
+	const navigation = useNavigation();
+	const isZipValid = zip => /^\d{5}$/.test(zip);
+	const isLatValid = lat => !isNaN(lat) && lat >= -90 && lat <= 90;
+	const isLongValid = long => !isNaN(long) && long >= -180 && long <= 180;
+	const isStateValid = state => /^[A-Z]{2}$/.test(state);
 
-const [address, setAddress] = useState('');
-const [city, setCity] = useState('');
-const [state, setState] = useState('');
-const [zip, setZip] = useState('');
-const [latitude, setLatitude] = useState('');
-const [longitude, setLongitude] = useState('');
-const navigation = useNavigation();
-const isZipValid = (zip) => /^\d{5}$/.test(zip);
-const isLatValid = (lat) => !isNaN(lat) && lat >= -90 && lat <= 90;
-const isLongValid = (long) => !isNaN(long) && long >= -180 && long <= 180;
-const isStateValid = (state) => /^[A-Z]{2}$/.test(state);
-
-const validateInputs = () => {
-	if (!name.trim()) {
-		Alert.alert('Validation Error', 'Please enter your name.');
-		return false;
-	}
-	if (!address.trim()) {
-		Alert.alert('Validation Error', 'Please enter your address.');
-		return false;
-	}
-	if (!city.trim()) {
-		Alert.alert('Validation Error', 'Please enter your city.');
-		return false;
-	}
-	if (!isStateValid(state)) {
-		Alert.alert('Validation Error', 'Please enter a valid 2-letter state code.');
-		return false;
-	}
-	if (!isZipValid(zip)) {
-		Alert.alert('Validation Error', 'Please enter a valid 5-digit zip code.');
-		return false;
-	}
-	if (!isLatValid(parseFloat(latitude))) {
-		Alert.alert('Validation Error', 'Please enter a valid latitude (-90 to 90).');
-		return false;
-	}
-	if (!isLongValid(parseFloat(longitude))) {
-		Alert.alert('Validation Error', 'Please enter a valid longitude (-180 to 180).');
-		return false;
-	}
-	return true;
+	const validateInputs = () => {
+		if (!name.trim()) {
+			Alert.alert('Validation Error', 'Please enter your name.');
+			return false;
+		}
+		if (!address.trim()) {
+			Alert.alert('Validation Error', 'Please enter your address.');
+			return false;
+		}
+		if (!city.trim()) {
+			Alert.alert('Validation Error', 'Please enter your city.');
+			return false;
+		}
+		if (!isStateValid(state)) {
+			Alert.alert(
+				'Validation Error',
+				'Please enter a valid 2-letter state code.',
+			);
+			return false;
+		}
+		if (!isZipValid(zip)) {
+			Alert.alert('Validation Error', 'Please enter a valid 5-digit zip code.');
+			return false;
+		}
+		if (!isLatValid(parseFloat(latitude))) {
+			Alert.alert(
+				'Validation Error',
+				'Please enter a valid latitude (-90 to 90).',
+			);
+			return false;
+		}
+		if (!isLongValid(parseFloat(longitude))) {
+			Alert.alert(
+				'Validation Error',
+				'Please enter a valid longitude (-180 to 180).',
+			);
+			return false;
+		}
+		return true;
 	};
 
-	const handleSubmit =  () => {
-	if (validateInputs()) {
-		const createData = {
-			name: name,
-			address: address,
-			city: city,
-			state: state,
-			zip: zip,
-			lat: latitude,
-			long: longitude
-		};
+	const handleSubmit = () => {
+		if (validateInputs()) {
+			const createData = {
+				name,
+				address,
+				city,
+				state,
+				zip,
+				lat: latitude,
+				long: longitude,
+			};
 
 		createLocation.mutate(createData, {
 			onSuccess: () => {
@@ -78,7 +88,7 @@ const validateInputs = () => {
 	}
 };
 
-const createLocation = useCreateLocation();
+	const createLocation = useCreateLocation();
 
 return (		
 	<KeyboardAvoidingView 
@@ -165,27 +175,27 @@ return (
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 20,
-  },
-  label: {
-    alignSelf: 'flex-start',
-    marginLeft: 10,
-    marginVertical: 5,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  input: {
-    width: '100%',
-    height: 40,
-    borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 4,
-    padding: 10,
-    marginVertical: 5,
-  },
+	container: {
+		flex: 1,
+		justifyContent: 'center',
+		padding: 20,
+	},
+	label: {
+		alignSelf: 'flex-start',
+		marginLeft: 10,
+		marginVertical: 5,
+		fontSize: 16,
+		fontWeight: 'bold',
+	},
+	input: {
+		width: '100%',
+		height: 40,
+		borderWidth: 1,
+		borderColor: 'gray',
+		borderRadius: 4,
+		padding: 10,
+		marginVertical: 5,
+	},
 });
 
 export default CreateLocation;

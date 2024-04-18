@@ -1,77 +1,96 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useRef, useState } from "react";
-import Globe from "react-globe.gl";
-import { useDebounceCallback } from "usehooks-ts";
-import { Card, ICard } from "../components/Card";
+import { useRef, useState } from "react";
+import Globe, { GlobeMethods } from "react-globe.gl";
+import { Card } from "../components/Card";
 import { LocationDetail } from "../components/LocationDetail";
 import { Pagination } from "../components/Pagination";
-import { API } from "../services";
 import Dashboard from "./Dashboard";
 
-const transformLocationData = (data: any) => {
-  return data.map((location: any) => {
-    return {
-      ...location,
-      lat: location.location.coordinates[1],
-      lng: location.location.coordinates[0],
-      rate: location.difficultyRateValue / location.difficultyRateCount,
-    };
-  });
+import type { LocationSchemaType } from "@xhoantran/common";
+import { useListLocation } from "../api/list";
+import useDebounce from "../utils/useDebounce";
+
+interface IPoint extends LocationSchemaType {
+  lat: number;
+  lng: number;
+  _id: string; // Define _id property
+}
+
+const transformLocation = (location: LocationSchemaType): IPoint => {
+  const {
+    location: { coordinates },
+  } = location;
+
+  return {
+    ...location,
+    lat: coordinates[1],
+    lng: coordinates[0],
+  };
 };
 
 export default function Home() {
-  const [pointsData, setPointsData] = useState<ICard[]>([]);
-  const [selectedPoint, setSelectedPoint] = useState<ICard | null>(null);
+  const [selectedPoint, setSelectedPoint] = useState<LocationSchemaType | null>(
+    null
+  );
   const [pov, setPov] = useState({
     lat: 0,
     lng: 0,
     altitude: 2.5,
   });
-  const setPovDebounced = useDebounceCallback(setPov, 50);
-  const globeRef = useRef();
+  const povDebounced = useDebounce(pov, 100);
+  const [prevPov, setPrevPov] = useState(pov);
+  const globeRef = useRef<GlobeMethods | undefined>();
 
-  useEffect(() => {
-    API.location
-      .list({
-        long: pov.lng,
-        lat: pov.lat,
-      })
-      .then((data: any) => {
-        console.log(data);
-        setPointsData(transformLocationData(data));
-      });
-  }, [pov]);
+  const listLocation = useListLocation({
+    long: povDebounced.lng,
+    lat: povDebounced.lat,
+  });
 
-  console.log("Home.tsx");
+  const transformedData = listLocation.data?.map(transformLocation) || [];
+
+  const onSelectedLocation = (location: LocationSchemaType) => {
+    setSelectedPoint(location);
+    setPrevPov(pov);
+    globeRef.current?.pointOfView(
+      {
+        lat: ((location.location.coordinates[1] - 2 + 90) % 180) - 90,
+        lng: ((location.location.coordinates[0] + 8 + 180) % 360) - 180,
+        altitude: 0.75,
+      },
+      1000
+    );
+  };
+
+  const onDeselectLocation = () => {
+    setSelectedPoint(null);
+    globeRef.current?.pointOfView(prevPov, 1000);
+  };
 
   return (
     <>
-      <Dashboard>
+      <Dashboard
+        onSelectedLocation={(location) => onSelectedLocation(location)}
+      >
         <div className="relative h-full w-full overflow-hidden">
           {/* Removed transition mobile code */}
 
           {/* Static sidebar for desktop */}
-          <div className="hidden lg:absolute lg:inset-y-0 lg:z-50 lg:flex lg:w-96 lg:flex-col">
+          <div className="hidden lg:absolute lg:inset-y-0 lg:z-40 lg:flex lg:w-96 lg:flex-col">
             {/* Sidebar component, swap this element with another sidebar if you like */}
             <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 py-4">
               <div className="flex flex-1 flex-col">
                 <ul role="list" className="flex flex-1 flex-col gap-y-7">
                   {selectedPoint ? (
                     <LocationDetail
-                      // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'point' implicitly has an 'any' type.
                       id={selectedPoint._id}
-                      onClickBack={() => setSelectedPoint(null)}
+                      onClickBack={() => onDeselectLocation()}
                     />
                   ) : (
                     <>
-                      {pointsData.map((point, index) => (
+                      {transformedData.map((point, index) => (
                         <Card
-                          onClick={() => setSelectedPoint(point)}
+                          onClick={() => onSelectedLocation(point)}
                           key={index}
-                          rate={point.rate}
-                          name={point.name}
-                          lat={point.lat}
-                          lng={point.lng}
+                          location={point}
                         />
                       ))}
                       <Pagination />
@@ -83,23 +102,25 @@ export default function Home() {
           </div>
 
           <div className="lg:pl-96">
-            <main className="py-10">
-              <div
-                className="px-4 sm:px-6 lg:px-8"
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginTop: "-100px",
-                }}
-              >
+            <main>
+              <div className="px-4 sm:px-6 lg:px-8 flex justify-center items-center">
                 <Globe
                   ref={globeRef}
-                  pointsData={pointsData}
-                  onPointClick={(point) => setSelectedPoint(point as any)}
+                  pointsData={transformedData}
+                  onPointClick={(point) =>
+                    onSelectedLocation(point as LocationSchemaType)
+                  }
                   globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
                   backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
-                  onZoom={(newPov) => setPovDebounced(newPov)}
+                  onZoom={(newPov) => setPov(newPov)}
+                  pointAltitude={(point) =>
+                    // @ts-expect-error _id is in LocationSchemaType
+                    point._id === selectedPoint?._id ? 0.3 : 0.1
+                  }
+                  pointColor={(point) =>
+                    // @ts-expect-error _id is in LocationSchemaType
+                    point._id === selectedPoint?._id ? "red" : "#ffffaa"
+                  }
                 />
               </div>
             </main>

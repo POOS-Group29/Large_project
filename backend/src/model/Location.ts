@@ -10,9 +10,17 @@ interface ILocation extends Document {
     type: string;
     coordinates: number[];
   };
-
+  types: string[];
+  marineLife: string[];
+  image: string | null;
+  images: string[];
+  maximumDepth: {
+    metters: number;
+    feet: number;
+  } | null;
   difficultyRateCount: number;
   difficultyRateValue: number;
+  approved: boolean;
 }
 
 const locationSchema = new Schema<ILocation>(
@@ -33,6 +41,32 @@ const locationSchema = new Schema<ILocation>(
     zip: {
       type: String,
     },
+    types: {
+      type: [String],
+      default: [],
+    },
+    marineLife: {
+      type: [String],
+      default: [],
+    },
+    image: {
+      type: String || null,
+      default: null,
+    },
+    images: {
+      type: [String],
+      default: [],
+    },
+    maximumDepth: {
+      metters: {
+        type: Number,
+      },
+      feet: {
+        type: Number,
+      },
+      type: Object || null,
+      default: null,
+    },
     location: {
       type: {
         type: String,
@@ -52,11 +86,17 @@ const locationSchema = new Schema<ILocation>(
       type: Number,
       default: 0,
     },
+    approved: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
 
 locationSchema.index({ location: "2dsphere" }, { unique: true });
+locationSchema.index({ name: "text" });
+locationSchema.index({ approved: 1 });
 
 const Location: Model<ILocation> = model("Location", locationSchema);
 

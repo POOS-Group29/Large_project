@@ -14,7 +14,12 @@ const queryConfig: DefaultOptions = {
 	},
 };
 
-export const queryClient = new QueryClient({ defaultOptions: queryConfig });
+export const queryClient = new QueryClient({
+	defaultOptions: queryConfig,
+	queryCache: new QueryCache({
+		onError: error => console.error(`Something went wrong: ${error.message}`),
+	}),
+});
 
 export type ExtractFnReturnType<FnType extends (...args: any) => any> = Awaited<
 	ReturnType<FnType>
