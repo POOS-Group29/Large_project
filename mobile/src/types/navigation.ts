@@ -7,7 +7,9 @@ export type ApplicationStackParamList = {
 	SignIn: undefined;
 	SignUp: undefined;
 	CreateLocation: undefined;
-	RetrieveLocation: undefined;
+	RetrieveLocation: {
+		locationId: string;
+	};
 };
 
 export type ApplicationScreenProps =

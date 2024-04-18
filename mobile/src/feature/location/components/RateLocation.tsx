@@ -1,80 +1,73 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
 import { Button } from '@/components/Button';
-import { useRateLocation, UseRateLocationOptions } from '@/feature/location/api/rate';
-import { useUpdateLocation, UseUpdateLocationOptions } from '@/feature/location/api/update';
+import { useRateLocation } from '@/feature/location/api/rate';
+import { useUpdateRating } from '@/feature/location/api/update';
+import { useTheme } from '@/theme';
 import { Rating } from '@kolking/react-native-rating';
-import { useNavigation } from '@react-navigation/native';
-
-
-const RetrieveLocation = ({onRatingSubmit,currentRating, location}) => {
-    const rateLocation = useRateLocation();
-    const updateLocation = useUpdateLocation();
-    const [rating, setRating] = useState(currentRating);
-    //const navigate = useNavigation();
-    const handleChange = (newRating: number) => {
-        setRating(newRating);
-    };
-
-    const submitRating = async () => {
-
-        if (location?.userRating === null) {
-            rateLocation.mutate({
-                locationId: location._id,
-                value: rating,
-            }, {
-                onSuccess: () => {
-                    Alert.alert('Rating submitted!');
-                    onRatingSubmit(rating);
-                }
-            });
-            
-        } else {
-            updateLocation.mutate({
-                locationId: location._id,
-                value: rating,
-            }, {
-                onSuccess: () => {
-                    Alert.alert('Rating updated!');
-                    onRatingSubmit(rating); 
-                }
-            });
-        }
-    }
-
-    return (
-
-            <View style={styles.userRatingContainer}>
-                <Text style={styles.clickToRateText}>Click to rate</Text>
-                <Rating size={34} rating={rating} onChange={handleChange} />
-                <Text style={styles.text}>Rated {rating} out of 5</Text>
-                <Button
-                    buttonStyle={{width: '50%'}}
-                    title="Submit"
-                    onPress={() => submitRating()}
-                />
-            </View>
-
-  );
-};
+import { LocationSchemaType } from '@xhoantran/common';
+import { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 const styles = StyleSheet.create({
-  userRatingContainer: {
-    marginTop: 10,
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 18,
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  clickToRateText: {
-    marginBottom: 10,
-    fontSize: 16,
-    color: '#555',
-    marginTop: 5,
-    fontStyle: 'italic',
-  }
+	clickToRateText: {
+		marginBottom: 10,
+		fontSize: 16,
+		color: '#555',
+		marginTop: 5,
+		fontStyle: 'italic',
+	},
 });
 
-export default RetrieveLocation;
+interface RateLocationProps {
+	location: LocationSchemaType;
+	refetch: () => void;
+}
+
+function RateLocation({ location, refetch }: RateLocationProps) {
+	const { layout, gutters } = useTheme();
+
+	const rateLocation = useRateLocation();
+	const updateLocation = useUpdateRating();
+	const [rating, setRating] = useState(
+		location.userRating ? location.userRating.value : 0,
+	);
+
+	const submitRating = () => {
+		if (location?.userRating === null) {
+			rateLocation.mutate(
+				{
+					// eslint-disable-next-line no-underscore-dangle
+					locationId: location._id,
+					value: rating,
+				},
+				{
+					onSuccess: () => refetch(),
+				},
+			);
+		} else {
+			updateLocation.mutate(
+				{
+					// eslint-disable-next-line no-underscore-dangle
+					locationId: location._id,
+					value: rating,
+				},
+				{
+					onSuccess: () => refetch(),
+				},
+			);
+		}
+	};
+
+	return (
+		<View style={[layout.col, layout.itemsCenter]}>
+			<Text style={[styles.clickToRateText]}>Click to rate</Text>
+			<Rating size={34} rating={rating} onChange={setRating} />
+			<Button
+				buttonStyle={[gutters.marginTop_16, gutters.paddingHorizontal_32]}
+				title="Submit"
+				onPress={() => submitRating()}
+			/>
+		</View>
+	);
+}
+
+export default RateLocation;

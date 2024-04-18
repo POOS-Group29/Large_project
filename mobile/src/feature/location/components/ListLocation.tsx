@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
+import { useTheme } from '@/theme';
 import { useSearchLocation } from '../api/search';
 
 const styles = StyleSheet.create({
@@ -54,12 +55,10 @@ const styles = StyleSheet.create({
 		fontSize: 17,
 		color: '#333',
 		fontWeight: 'bold',
-		top: 10,
-		bottom: 10,
 	},
 	rating: {
 		flexDirection: 'row',
-		top: 12,
+		alignItems: 'center',
 	},
 	subText: {
 		fontSize: 14,
@@ -88,6 +87,7 @@ interface ListLocationProps {
 }
 
 export function ListLocation(props: ListLocationProps) {
+	const { layout, gutters, fonts } = useTheme();
 	const { locations } = props;
 	const [searchQuery, setSearchQuery] = useState('');
 	const navigation = useNavigation();
@@ -127,7 +127,7 @@ export function ListLocation(props: ListLocationProps) {
 								})
 							}
 						>
-							<View>
+							<View style={[layout.flex_1, layout.col]}>
 								<View style={styles.imageContainer}>
 									{location.image ? (
 										<Image
@@ -138,7 +138,6 @@ export function ListLocation(props: ListLocationProps) {
 											}}
 										/>
 									) : (
-										// No image available
 										<Image
 											style={styles.imageContainer}
 											alt="No image available"
@@ -149,9 +148,33 @@ export function ListLocation(props: ListLocationProps) {
 									)}
 								</View>
 
-								<Text style={styles.text}>{location.name}</Text>
+								<Text style={[styles.text, gutters.marginTop_8]}>
+									{location.name}
+								</Text>
 
-								<View style={styles.rating}>
+								{/* Types */}
+								<View style={gutters.marginTop_4}>
+									<Text style={[fonts.size_12, fonts.medium, fonts.gray600]}>
+										Types:{' '}
+										{location.types.length === 0
+											? 'N/A'
+											: location.types.join(', ')}
+									</Text>
+								</View>
+
+								{/* Maximum Depth */}
+								<View style={gutters.marginTop_4}>
+									<Text style={[fonts.size_12, fonts.medium, fonts.gray600]}>
+										Maximum Depth:{' '}
+										{location.maximumDepth
+											? `${location.maximumDepth.metters.toPrecision(
+													4,
+											  )}m / ${location.maximumDepth.feet.toPrecision(4)}ft`
+											: 'N/A'}
+									</Text>
+								</View>
+
+								<View style={[styles.rating, gutters.marginTop_8]}>
 									<Rating
 										size={17}
 										rating={calculateRating(
@@ -160,7 +183,14 @@ export function ListLocation(props: ListLocationProps) {
 										)}
 										disabled
 									/>
-									<Text style={{ marginLeft: 5 }}>
+									<Text
+										style={[
+											gutters.marginLeft_8,
+											fonts.size_12,
+											fonts.medium,
+											fonts.gray500,
+										]}
+									>
 										{location.difficultyRateCount}
 									</Text>
 								</View>
