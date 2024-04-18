@@ -43,6 +43,9 @@ export default function Home() {
   const listLocation = useListLocation({
     long: povDebounced.lng,
     lat: povDebounced.lat,
+    config: {
+      enabled: !selectedPoint,
+    },
   });
 
   const transformedData = listLocation.data?.map(transformLocation) || [];
@@ -106,7 +109,7 @@ export default function Home() {
               <div className="px-4 sm:px-6 lg:px-8 flex justify-center items-center">
                 <Globe
                   ref={globeRef}
-                  pointsData={transformedData}
+                  pointsData={selectedPoint ? [transformLocation(selectedPoint)] : transformedData}
                   onPointClick={(point) =>
                     onSelectedLocation(point as LocationSchemaType)
                   }
