@@ -1,7 +1,10 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { Rating } from '@kolking/react-native-rating';
 import { LocationSchemaType } from '@xhoantran/common';
 import { useTheme } from '@/theme';
+import Carousel from 'react-native-reanimated-carousel';
+
+
 
 interface LocationDetailsProps {
 	location: LocationSchemaType;
@@ -41,6 +44,8 @@ const styles = StyleSheet.create({
 	},
 });
 
+
+
 function LocationDetails({ location }: LocationDetailsProps) {
 	const { layout, gutters, fonts } = useTheme();
 
@@ -51,6 +56,8 @@ function LocationDetails({ location }: LocationDetailsProps) {
 	const calculateRating = (sum: number, count: number): number => {
 		return count === 0 ? 0 : sum / count;
 	};
+
+	const { width } = useWindowDimensions();
 
 	return (
 		<View
@@ -63,12 +70,24 @@ function LocationDetails({ location }: LocationDetailsProps) {
 		>
 			<View style={styles.imageContainer}>
 				{location.image ? (
-					<Image
-						style={styles.imageContainer}
-						alt={location.name}
-						source={{
-							uri: location.image,
-						}}
+					<Carousel
+					loop
+					width={width}
+					height={width / 2}
+					autoPlay={true}
+					data={[...new Array(6).keys()]}
+					scrollAnimationDuration={1000}
+					onSnapToItem={(index) => console.log('current index:', index)}
+					renderItem={({ index }) => (
+							<View style={styles.imageContainer}>
+								<Image
+									style={styles.imageContainer}
+									source={{ uri: location.images[index] || 'https://via.placeholder.com/150'}}
+									alt="Location image"
+								/>
+							</View>
+
+					)}
 					/>
 				) : (
 					<Image
