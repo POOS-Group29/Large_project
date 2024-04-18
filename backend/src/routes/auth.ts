@@ -1,12 +1,12 @@
 import express from "express";
 import jwt from "jsonwebtoken";
+import { sendVerificationMail } from "mail/sendVerificationMail";
 import { AuthConfig } from "../config/AuthConfig";
-import { nodemailerTransporter, sendFromEmail } from "../config/nodemailer";
+import { awsTransporter, sendFromEmail } from "../config/nodemailer";
 import logger from "../config/winston";
 import { authMiddleware } from "../middleware/AuthMiddleware";
 import User from "../model/User";
 import { ResetPassword } from "../templates";
-import { sendVerificationMail } from "mail/sendVerificationMail";
 
 export const AuthRoutes = express.Router();
 
@@ -166,7 +166,7 @@ AuthRoutes.post("/forgot-password", async (req, res) => {
       expiresIn: 600,
     });
 
-    nodemailerTransporter.sendMail(
+    awsTransporter.sendMail(
       {
         from: sendFromEmail,
         to: email,

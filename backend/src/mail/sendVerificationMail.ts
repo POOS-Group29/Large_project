@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { AuthConfig } from "../config/AuthConfig";
-import { nodemailerTransporter } from "../config/nodemailer";
+import { awsTransporter } from "../config/nodemailer";
 import logger from "../config/winston";
 import { VerificationEmail } from "../templates/Verification";
 
@@ -26,7 +26,7 @@ export const sendVerificationMail = async (props: VerificationEmailProps) => {
     text: VerificationEmail(email, token, name),
   };
 
-  nodemailerTransporter.sendMail(mailOptions, (err, info) => {
+  awsTransporter.sendMail(mailOptions, (err, info) => {
     if (err) {
       logger.error(`Error sending verification email to ${email}: ${err}`);
     } else {
