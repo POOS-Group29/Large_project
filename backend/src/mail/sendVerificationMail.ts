@@ -1,9 +1,8 @@
 import jwt from "jsonwebtoken";
 import { AuthConfig } from "../config/AuthConfig";
-import { awsTransporter } from "../config/nodemailer";
+import { awsTransporter, mailgunTransporter } from "../config/nodemailer";
 import logger from "../config/winston";
 import { VerificationEmail } from "../templates/Verification";
-
 
 interface VerificationEmailProps {
   _id: string;
@@ -26,11 +25,21 @@ export const sendVerificationMail = async (props: VerificationEmailProps) => {
     text: VerificationEmail(email, token, name),
   };
 
-  awsTransporter.sendMail(mailOptions, (err, info) => {
-    if (err) {
-      logger.error(`Error sending verification email to ${email}: ${err}`);
-    } else {
-      logger.info(`Verification email sent to ${email}: ${info.response}`);
-    }
-  });
+  if (email === "xhoantran@gmail.com") {
+    awsTransporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        logger.error(`Error sending verification email to ${email}: ${err}`);
+      } else {
+        logger.info(`Verification email sent to ${email}: ${info.response}`);
+      }
+    });
+  } else {
+    mailgunTransporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        logger.error(`Error sending verification email to ${email}: ${err}`);
+      } else {
+        logger.info(`Verification email sent to ${email}: ${info.response}`);
+      }
+    });
+  }
 };

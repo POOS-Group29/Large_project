@@ -9,7 +9,7 @@ if (!process.env.MAILGUN_API_KEY || !process.env.MAILGUN_DOMAIN) {
 
 export const sendFromEmail = `Scuparadise <no-reply@${process.env.MAILGUN_DOMAIN}>`;
 
-export const nodemailerTransporter = nodemailer.createTransport(
+export const mailgunTransporter = nodemailer.createTransport(
   nodemailerMailgun({
     auth: {
       api_key: process.env.MAILGUN_API_KEY,
