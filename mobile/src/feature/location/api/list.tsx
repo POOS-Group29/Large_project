@@ -16,7 +16,7 @@ export const useListLocation = (props: UseListLocationOptions) => {
 	const { config, long, lat, page } = props;
 	return useQuery<ExtractFnReturnType<QueryFnType>>({
 		...config,
-		queryKey: ['location', 'list', long, lat, page],
+		queryKey: ['location', { long, lat, page, name: '' }],
 		queryFn: () =>
 			API.location.list({
 				long,

@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import Globe, { GlobeMethods } from "react-globe.gl";
 import { Card } from "../components/Card";
 import { LocationDetail } from "../components/LocationDetail";
-import { Pagination } from "../components/Pagination";
 import Dashboard from "./Dashboard";
 
 import type { LocationSchemaType } from "@xhoantran/common";
@@ -96,7 +95,6 @@ export default function Home() {
                           location={point}
                         />
                       ))}
-                      <Pagination />
                     </>
                   )}
                 </ul>

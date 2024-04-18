@@ -14,6 +14,8 @@ import {
 import { ScrollView } from 'react-native-gesture-handler';
 
 import { useTheme } from '@/theme';
+import { ApplicationStackParamList } from '@/types/navigation';
+import { StackScreenProps } from '@react-navigation/stack';
 import { useSearchLocation } from '../api/search';
 
 const styles = StyleSheet.create({
@@ -86,11 +88,13 @@ interface ListLocationProps {
 	locations: LocationSchemaType[];
 }
 
+type Props = StackScreenProps<ApplicationStackParamList>;
+
 export function ListLocation(props: ListLocationProps) {
+	const navigation = useNavigation<Props>();
 	const { layout, gutters, fonts } = useTheme();
 	const { locations } = props;
 	const [searchQuery, setSearchQuery] = useState('');
-	const navigation = useNavigation();
 	const searchLocation = useSearchLocation({
 		name: searchQuery,
 		config: {
@@ -121,7 +125,8 @@ export function ListLocation(props: ListLocationProps) {
 						<Pressable
 							style={styles.slideItem}
 							onPress={() =>
-								// @ts-expect-error navigation type
+								// @ts-expect-error: navigation type error
+								// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
 								navigation.navigate('RetrieveLocation', {
 									locationId: location._id,
 								})
