@@ -147,7 +147,7 @@ export function ListLocation(props: ListLocationProps) {
 											style={styles.imageContainer}
 											alt="No image available"
 											source={{
-												uri: 'https://via.placeholder.com/150',
+												uri: 'https://via.placeholder.com/2000',
 											}}
 										/>
 									)}
