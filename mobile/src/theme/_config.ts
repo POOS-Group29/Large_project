@@ -15,6 +15,18 @@ export const tailwindColors = {
 	gray900: '#111827',
 	gray950: '#030712',
 
+	green50: '#f0fdf4',
+	green100: '#dcfce7',
+	green200: '#bbf7d0',
+	green300: '#86efac',
+	green400: '#4ade80',
+	green500: '#22c55e',
+	green600: '#16a34a',
+	green700: '#15803d',
+	green800: '#166534',
+	green900: '#14532d',
+	green950: '#052e16',
+
 	blue50: '#eff6ff',
 	blue100: '#dbeafe',
 	blue200: '#bfdbfe',

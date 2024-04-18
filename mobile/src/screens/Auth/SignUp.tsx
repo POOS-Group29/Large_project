@@ -13,22 +13,53 @@ import { HTTPError } from 'ky';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { Alert, SafeAreaView, Text, View } from 'react-native';
 
+const passwordRequirements = [
+	{
+		text: 'Password must be at least 8 characters long',
+		validate: (password: string) => password.length >= 8,
+	},
+	{
+		text: 'Password must contain at least one uppercase letter',
+		validate: (password: string) => /[A-Z]/.test(password),
+	},
+	{
+		text: 'Password must contain at least one number',
+		validate: (password: string) => /[0-9]/.test(password),
+	},
+	{
+		text: 'Password must contain at least one special character',
+		validate: (password: string) => /[!@#$%^&*]/.test(password),
+	},
+];
+
 function SignUp({ navigation }: ApplicationScreenProps) {
 	const { layout, fonts, gutters, variant } = useTheme();
 
 	const {
 		control,
 		handleSubmit,
+		watch,
 		formState: { isValid, isSubmitting },
 	} = useForm<SignUpRequestSchemaType>({
 		resolver: zodResolver(SignUpRequestSchema),
+		defaultValues: {
+			name: '',
+			email: '',
+			password: '',
+		},
 		mode: 'onBlur',
 	});
+
+	const password = watch('password');
 
 	const onSubmit: SubmitHandler<SignUpRequestSchemaType> = async data => {
 		try {
 			await API.auth.signUp(data);
-			navigation.replace('SignIn');
+			Alert.alert(
+				'Success',
+				'Account created successfully, please verify your email to continue.',
+				[{ text: 'OK', onPress: () => navigation.replace('SignIn') }],
+			);
 		} catch (err) {
 			if (err instanceof HTTPError) {
 				const message = errorSchema.parse(await err.response?.json());
@@ -117,6 +148,20 @@ function SignUp({ navigation }: ApplicationScreenProps) {
 						/>
 					)}
 				/>
+
+				<View>
+					{passwordRequirements.map((requirement, index) => (
+						<View key={index} style={[gutters.marginTop_8]}>
+							<Text
+								style={
+									requirement.validate(password) ? fonts.green700 : fonts.red500
+								}
+							>
+								{requirement.text}
+							</Text>
+						</View>
+					))}
+				</View>
 
 				<Button
 					title="Create account"
