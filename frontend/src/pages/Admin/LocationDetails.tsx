@@ -76,7 +76,7 @@ export default function LocationDetail() {
                   <p>
                     Maximal depth:{" "}
                     {getLocation.data.maximumDepth
-                      ? getLocation.data.maximumDepth.metters + "m"
+                      ? `${getLocation.data.maximumDepth.metters}m / ${getLocation.data.maximumDepth.feet}ft`
                       : "Not available"}
                   </p>
                   <p>

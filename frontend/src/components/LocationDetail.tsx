@@ -83,7 +83,7 @@ export const LocationDetail = (props: LocationDetailProps) => {
           <p>
             Maximal depth:{" "}
             {location.maximumDepth
-              ? location.maximumDepth.metters + "m"
+              ? `${location.maximumDepth.metters}m / ${location.maximumDepth.feet}ft`
               : "Not available"}
           </p>
           <p>
