@@ -1,10 +1,14 @@
-import { Image, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import {
+	Image,
+	StyleSheet,
+	Text,
+	View,
+	useWindowDimensions,
+} from 'react-native';
 import { Rating } from '@kolking/react-native-rating';
 import { LocationSchemaType } from '@xhoantran/common';
 import { useTheme } from '@/theme';
 import Carousel from 'react-native-reanimated-carousel';
-
-
 
 interface LocationDetailsProps {
 	location: LocationSchemaType;
@@ -38,16 +42,15 @@ const styles = StyleSheet.create({
 	},
 
 	imageContainer: {
-		borderRadius: 4,
 		width: '100%',
-		height: 150,
+		height: 200,
 	},
 });
 
-
-
 function LocationDetails({ location }: LocationDetailsProps) {
 	const { layout, gutters, fonts } = useTheme();
+
+	const { width } = useWindowDimensions();
 
 	if (!location) {
 		return <Text>Loading location details...</Text>; // Or handle the absence differently
@@ -57,96 +60,97 @@ function LocationDetails({ location }: LocationDetailsProps) {
 		return count === 0 ? 0 : sum / count;
 	};
 
-	const { width } = useWindowDimensions();
-
 	return (
-		<View
-			style={[
-				layout.col,
-				layout.fullWidth,
-				gutters.paddingHorizontal_16,
-				gutters.paddingVertical_12,
-			]}
-		>
+		<>
 			<View style={styles.imageContainer}>
-				{location.image ? (
+				{location.images.length > 0 ? (
 					<Carousel
-					loop
-					width={width}
-					height={width / 2}
-					autoPlay={true}
-					data={[...new Array(6).keys()]}
-					scrollAnimationDuration={1000}
-					onSnapToItem={(index) => console.log('current index:', index)}
-					renderItem={({ index }) => (
-							<View style={styles.imageContainer}>
-								<Image
-									style={styles.imageContainer}
-									source={{ uri: location.images[index] || 'https://via.placeholder.com/150'}}
-									alt="Location image"
-								/>
-							</View>
-
-					)}
+						loop
+						width={width}
+						autoPlay
+						data={location.images}
+						scrollAnimationDuration={1000}
+						renderItem={({ index }) => (
+							<Image
+								style={styles.imageContainer}
+								source={{
+									uri: location.images[index],
+								}}
+								alt="Location image"
+							/>
+						)}
 					/>
 				) : (
 					<Image
 						style={styles.imageContainer}
 						alt="No image available"
 						source={{
-							uri: 'https://via.placeholder.com/150',
+							uri: 'https://via.placeholder.com/2000',
 						}}
 					/>
 				)}
 			</View>
-
-			<Text
-				style={[gutters.marginTop_8, fonts.size_16, fonts.bold, fonts.gray900]}
+			<View
+				style={[
+					layout.col,
+					layout.fullWidth,
+					gutters.paddingHorizontal_16,
+					gutters.paddingVertical_12,
+				]}
 			>
-				{location.name}
-			</Text>
-
-			<View style={[gutters.marginTop_8, layout.row, layout.itemsCenter]}>
-				<Rating
-					size={17}
-					rating={calculateRating(
-						location.difficultyRateValue,
-						location.difficultyRateCount,
-					)}
-					disabled
-				/>
 				<Text
 					style={[
-						gutters.marginLeft_8,
-						fonts.size_12,
-						fonts.medium,
-						fonts.gray500,
+						gutters.marginTop_8,
+						fonts.size_16,
+						fonts.bold,
+						fonts.gray900,
 					]}
 				>
-					{location.difficultyRateCount}
+					{location.name}
 				</Text>
-			</View>
 
-			{/* Types */}
-			<View style={gutters.marginTop_4}>
-				<Text style={[fonts.size_12, fonts.medium, fonts.gray600]}>
-					Types:{' '}
-					{location.types.length === 0 ? 'N/A' : location.types.join(', ')}
-				</Text>
-			</View>
+				<View style={[gutters.marginTop_8, layout.row, layout.itemsCenter]}>
+					<Rating
+						size={17}
+						rating={calculateRating(
+							location.difficultyRateValue,
+							location.difficultyRateCount,
+						)}
+						disabled
+					/>
+					<Text
+						style={[
+							gutters.marginLeft_8,
+							fonts.size_12,
+							fonts.medium,
+							fonts.gray500,
+						]}
+					>
+						{location.difficultyRateCount}
+					</Text>
+				</View>
 
-			{/* Maximum Depth */}
-			<View style={gutters.marginTop_4}>
-				<Text style={[fonts.size_12, fonts.medium, fonts.gray600]}>
-					Maximum Depth:{' '}
-					{location.maximumDepth
-						? `${location.maximumDepth.metters.toPrecision(
-								4,
-						  )}m / ${location.maximumDepth.feet.toPrecision(4)}ft`
-						: 'N/A'}
-				</Text>
+				{/* Types */}
+				<View style={gutters.marginTop_4}>
+					<Text style={[fonts.size_12, fonts.medium, fonts.gray600]}>
+						Types:{' '}
+						{location.types.length === 0 ? 'N/A' : location.types.join(', ')}
+					</Text>
+				</View>
+
+				{/* Maximum Depth */}
+				<View style={gutters.marginTop_4}>
+					<Text style={[fonts.size_12, fonts.medium, fonts.gray600]}>
+						Maximum Depth:{' '}
+						{location.maximumDepth
+							? `${location.maximumDepth.metters.toPrecision(
+									4,
+							  )}m / ${location.maximumDepth.feet.toPrecision(4)}ft`
+							: 'N/A'}
+					</Text>
+				</View>
 			</View>
-		</View>
+		</>
 	);
 }
 
