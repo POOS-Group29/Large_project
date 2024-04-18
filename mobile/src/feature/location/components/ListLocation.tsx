@@ -33,9 +33,10 @@ const styles = StyleSheet.create({
 		alignSelf: 'center',
 	},
 	scrollView: {
-		top: '5%',
+		marginTop: 10,
 		width: '100%', // Use full width of the screen
-		backgroundColor: '#ffffff', // Light background color for the list
+		display: 'flex',
+		flexDirection: 'column',
 	},
 	slideView: {
 		backgroundColor: '#ffffff', // White background for each item
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
 		borderColor: '#e0e0e0', // Lighter border color
 		borderRadius: 20, // Rounded corners
 		padding: 16, // Padding inside each item
-		marginBottom: 2, // Space between items
+		marginBottom: 10, // Space between items
 		shadowOpacity: 0.1,
 	},
 	slideItem: {
@@ -65,7 +66,11 @@ const styles = StyleSheet.create({
 		color: '#666', // Slightly lighter color for less important text
 		marginTop: 4, // Space between main text and subtext
 	},
-	imageContainer: {},
+	imageContainer: {
+		borderRadius: 4,
+		width: '100%',
+		height: 150,
+	},
 	searchContainer: {
 		padding: 10,
 		backgroundColor: '#fff',
@@ -124,13 +129,24 @@ export function ListLocation(props: ListLocationProps) {
 						>
 							<View>
 								<View style={styles.imageContainer}>
-									<Image
-										style={{ width: '100%', height: 150 }}
-										alt={location.name}
-										source={{
-											uri: location.image,
-										}}
-									/>
+									{location.image ? (
+										<Image
+											style={styles.imageContainer}
+											alt={location.name}
+											source={{
+												uri: location.image,
+											}}
+										/>
+									) : (
+										// No image available
+										<Image
+											style={styles.imageContainer}
+											alt="No image available"
+											source={{
+												uri: 'https://via.placeholder.com/150',
+											}}
+										/>
+									)}
 								</View>
 
 								<Text style={styles.text}>{location.name}</Text>
