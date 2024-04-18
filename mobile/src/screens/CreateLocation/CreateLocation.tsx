@@ -1,5 +1,7 @@
 import { Button } from '@/components/Button';
+import { ApplicationStackParamList } from '@/types/navigation';
 import { useNavigation } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
 import { useState } from 'react';
 import {
 	Alert,
@@ -37,8 +39,10 @@ const styles = StyleSheet.create({
 	},
 });
 
+type Props = StackScreenProps<ApplicationStackParamList>;
+
 function CreateLocation() {
-	const navigation = useNavigation();
+	const navigation = useNavigation<Props>();
 
 	const [name, setName] = useState('');
 	const [address, setAddress] = useState('');
@@ -97,11 +101,12 @@ function CreateLocation() {
 			createLocation.mutate(createData, {
 				onSuccess: () => {
 					Alert.alert('Location created successfully!');
+					// @ts-expect-error: navigate is possibly null
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 					navigation.navigate('Main');
 				},
 				onError: error => {
-					console.log(error);
-					Alert.alert('Error Creating Location');
+					Alert.alert('Error', error.message || 'An error occurred.');
 				},
 			});
 		}
