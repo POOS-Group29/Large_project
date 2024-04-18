@@ -98,7 +98,7 @@ LocationRoutes.post("/", async (req, res) => {
       maximumDepth,
       location: {
         type: "Point",
-        coordinates: [parseFloat(lat), parseFloat(long)],
+        coordinates: [parseFloat(long), parseFloat(lat)],
       },
       // @ts-expect-error User ID is injected by the middleware
       approved: req.user.isAdmin,
