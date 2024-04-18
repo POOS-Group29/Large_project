@@ -1,96 +1,20 @@
-import { useTheme } from '@/theme';
-import type { LocationSchemaType } from '@/types';
+/* eslint-disable no-underscore-dangle */
 import { Rating } from '@kolking/react-native-rating';
 import { useNavigation } from '@react-navigation/native';
-import { useEffect, useState } from 'react';
+import { LocationSchemaType } from '@xhoantran/common';
+import { useState } from 'react';
 import {
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View
+	Image,
+	Pressable,
+	StyleSheet,
+	Text,
+	TextInput,
+	View,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+
 import { useSearchLocation } from '../api/search';
 
-interface ListLocationProps {
-	locations: LocationSchemaType[];
-}
-var firstLoad = true;
-export function ListLocation(props: ListLocationProps) {
-	const { borders, gutters } = useTheme();
-	const { locations } = props;
-	const [searchQuery, setSearchQuery] = useState('');
-	const [listLocation, setListLocation] = useState<LocationSchemaType[]>(locations);
-	const { data, error, isLoading, refetch } = useSearchLocation({name: searchQuery});
-
-	useEffect(() => {
-		if (!isLoading && data){
-			setListLocation(data);
-			firstLoad = false;
-		}
-	}, [isLoading, data]);
-
-	useEffect(() => {
-		refetch();
-	}, [searchQuery]);
-
-	console.log(listLocation)
-
-	const [selectedLocation, setSelectedLocation] =
-		useState<LocationSchemaType | null>(null);
-	
-	const calculateRating = (sum:number, count:number) :number=>{
-		return count === 0 ? 0 : sum/count;
-	
-	}
-	const navigation = useNavigation();
-	return (
-		<View style={[styles.container]}>
-
-		<View style={styles.searchContainer}>
-            <TextInput
-                style={styles.input}
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                placeholder="Search..."
-                clearButtonMode="while-editing"
-            />
-        </View>
-			<ScrollView style={styles.scrollView}>
-				{ listLocation && listLocation.map((location, index) => (
-					<View
-						style={styles.slideView}
-						key={index}
-					>
-						<Pressable style={styles.slideItem} onPress={() => navigation.navigate('RetrieveLocation', {locationId: location._id})}>
-							<View>
-								<View style={styles.imageContainer}>
-									<Image
-										style={{width: '100%', height: 150}}
-										alt={location.name}
-										source={{
-										uri: location.image,
-										}}
-									/>
-								</View>
-								
-								<Text style={styles.text}>{location.name}</Text>
-
-								<View style={styles.rating}>
-									<Rating size={17} rating={calculateRating(location.difficultyRateValue, location.difficultyRateCount)} disabled />
-									<Text style={{marginLeft:5}}>{location.difficultyRateCount}</Text>
-								</View>
-							</View>
-						</Pressable>
-					</View>
-				))}
-			</ScrollView>
-			{/* <CreateLocation/> */}
-		</View>
-	);
-}
 const styles = StyleSheet.create({
 	container: {
 		bottom: 0,
@@ -116,12 +40,12 @@ const styles = StyleSheet.create({
 	slideView: {
 		backgroundColor: '#ffffff', // White background for each item
 		borderWidth: 1,
-		borderColor: '#e0e0e0',  // Lighter border color
-		borderRadius: 20,  // Rounded corners
-		padding: 16,  // Padding inside each item
-		marginBottom: 2,  // Space between items
+		borderColor: '#e0e0e0', // Lighter border color
+		borderRadius: 20, // Rounded corners
+		padding: 16, // Padding inside each item
+		marginBottom: 2, // Space between items
 		shadowOpacity: 0.1,
-	  },
+	},
 	slideItem: {
 		paddingBottom: 5,
 	},
@@ -129,30 +53,106 @@ const styles = StyleSheet.create({
 		fontSize: 17,
 		color: '#333',
 		fontWeight: 'bold',
-		top: 10, 
+		top: 10,
 		bottom: 10,
-	  },
-	  rating: {
+	},
+	rating: {
 		flexDirection: 'row',
 		top: 12,
-	  },
-	  subText: {
+	},
+	subText: {
 		fontSize: 14,
-		color: '#666',  // Slightly lighter color for less important text
-		marginTop: 4,  // Space between main text and subtext
-	  },
-	  imageContainer: {
-		
-	  },
-	  searchContainer: {
-        padding: 10,
-        backgroundColor: '#fff',
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 20,
-    },
-    input: {
-        fontSize: 16
-    }
-	
+		color: '#666', // Slightly lighter color for less important text
+		marginTop: 4, // Space between main text and subtext
+	},
+	imageContainer: {},
+	searchContainer: {
+		padding: 10,
+		backgroundColor: '#fff',
+		borderWidth: 1,
+		borderColor: '#ccc',
+		borderRadius: 20,
+	},
+	input: {
+		fontSize: 16,
+	},
 });
+
+interface ListLocationProps {
+	locations: LocationSchemaType[];
+}
+
+export function ListLocation(props: ListLocationProps) {
+	const { locations } = props;
+	const [searchQuery, setSearchQuery] = useState('');
+	const navigation = useNavigation();
+	const searchLocation = useSearchLocation({
+		name: searchQuery,
+		config: {
+			enabled: searchQuery.length > 0,
+		},
+	});
+
+	const listLocation = searchQuery.length > 0 ? searchLocation.data : locations;
+
+	const calculateRating = (sum: number, count: number): number => {
+		return count === 0 ? 0 : sum / count;
+	};
+
+	return (
+		<View style={[styles.container]}>
+			<View style={styles.searchContainer}>
+				<TextInput
+					style={styles.input}
+					value={searchQuery}
+					onChangeText={setSearchQuery}
+					placeholder="Search..."
+					clearButtonMode="while-editing"
+				/>
+			</View>
+			<ScrollView style={styles.scrollView}>
+				{listLocation?.map((location, index) => (
+					<View style={styles.slideView} key={index}>
+						<Pressable
+							style={styles.slideItem}
+							onPress={() =>
+								// @ts-expect-error navigation type
+								navigation.navigate('RetrieveLocation', {
+									locationId: location._id,
+								})
+							}
+						>
+							<View>
+								<View style={styles.imageContainer}>
+									<Image
+										style={{ width: '100%', height: 150 }}
+										alt={location.name}
+										source={{
+											uri: location.image,
+										}}
+									/>
+								</View>
+
+								<Text style={styles.text}>{location.name}</Text>
+
+								<View style={styles.rating}>
+									<Rating
+										size={17}
+										rating={calculateRating(
+											location.difficultyRateValue,
+											location.difficultyRateCount,
+										)}
+										disabled
+									/>
+									<Text style={{ marginLeft: 5 }}>
+										{location.difficultyRateCount}
+									</Text>
+								</View>
+							</View>
+						</Pressable>
+					</View>
+				))}
+			</ScrollView>
+		</View>
+	);
+}
